@@ -43,7 +43,7 @@ export function ThemeToggle({ placement = 'sidebar' }: Props) {
   if (!mounted) {
     return (
       <div
-        className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border-2 border-border bg-card opacity-50"
+        className="inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--duo-border-strong)] bg-card opacity-50"
         aria-hidden
       >
         <Sun className="size-4 opacity-40" />
@@ -58,7 +58,7 @@ export function ThemeToggle({ placement = 'sidebar' }: Props) {
     <div ref={rootRef} className="relative isolate">
       <button
         type="button"
-        className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border-2 border-border bg-card text-foreground shadow-[0_3px_0_0_var(--border)] transition-all outline-none hover:bg-muted hover:brightness-[1.02] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-0.5 active:shadow-none dark:border-input dark:bg-input/30 dark:hover:bg-input/50"
+        className="inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--duo-border-strong)] bg-card font-sans text-foreground shadow-[0_4px_0_0_var(--duo-border-strong)] transition-all outline-none hover:bg-muted hover:brightness-[1.02] focus-visible:border-[var(--chart-2)] focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35 active:translate-y-1 active:shadow-none dark:border-input dark:bg-input/30 dark:shadow-[0_4px_0_0_var(--border)] dark:hover:bg-input/50"
         aria-label="Choose color theme"
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -74,13 +74,13 @@ export function ThemeToggle({ placement = 'sidebar' }: Props) {
           role="listbox"
           aria-label="Theme"
           className={cn(
-            'absolute z-[200] flex min-w-[10.5rem] flex-col gap-0.5 rounded-xl border border-border/80 bg-popover p-1.5 text-popover-foreground shadow-lg ring-1 ring-foreground/5',
+            'absolute z-[200] flex min-w-[10.5rem] flex-col gap-0.5 rounded-2xl border-2 border-[var(--duo-border)] bg-popover p-2 text-popover-foreground shadow-[0_6px_0_0_var(--duo-border)] ring-0 dark:border-border dark:shadow-[0_4px_0_0_var(--border)]',
             placement === 'sidebar'
               ? 'bottom-full left-0 mb-2 origin-bottom'
               : 'top-full right-0 mt-2 origin-top'
           )}
         >
-          <span className="px-2 py-1 font-sans text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+          <span className="px-2 py-1 font-sans text-[10px] font-extrabold tracking-[0.12em] text-muted-foreground uppercase">
             Theme
           </span>
           {OPTIONS.map(({ id, label, Icon: OptIcon }) => (
@@ -89,7 +89,7 @@ export function ThemeToggle({ placement = 'sidebar' }: Props) {
               type="button"
               role="option"
               aria-selected={active === id}
-              className="flex w-full cursor-default items-center gap-2 rounded-lg px-2 py-2 text-left text-sm font-semibold outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+              className="flex w-full cursor-default items-center gap-2 rounded-xl px-2 py-2.5 text-left font-sans text-sm font-extrabold outline-none hover:bg-muted focus-visible:bg-muted"
               onClick={() => {
                 setTheme(id);
                 setOpen(false);

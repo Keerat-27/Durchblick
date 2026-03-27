@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 type PlaceholderProps = {
   titleDe: string;
@@ -14,17 +15,17 @@ function SkillPlaceholder({
   accentClass = 'text-primary',
 }: PlaceholderProps) {
   return (
-    <Card className="app-reveal app-skill-card bg-card/90 backdrop-blur-sm dark:bg-card/80">
-      <CardHeader className="border-b border-border/60 pb-4">
+    <Card className="app-reveal app-skill-card bg-card">
+      <CardHeader className="border-b-2 border-[var(--duo-border)] pb-4 dark:border-border">
         <CardTitle className="font-heading text-2xl tracking-tight md:text-3xl">
-          <span className={accentClass}>{titleDe}</span>
-          <span className="mt-1 block font-sans text-base font-normal text-muted-foreground">
+          <span className={cn(accentClass, 'font-extrabold')}>{titleDe}</span>
+          <span className="mt-1 block font-sans text-base font-bold text-muted-foreground">
             {titleEn}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+        <p className="max-w-2xl font-sans text-base font-semibold leading-relaxed text-muted-foreground md:text-lg">
           {body}
         </p>
       </CardContent>

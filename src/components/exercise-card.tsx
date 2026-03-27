@@ -145,7 +145,7 @@ export function ExerciseCard({
     return (
       <>
         {parts[0]}
-        <strong className="font-semibold text-primary">___</strong>
+        <strong className="font-extrabold text-[var(--chart-2)]">___</strong>
         {parts.slice(1).join('___')}
       </>
     );
@@ -154,17 +154,17 @@ export function ExerciseCard({
   const inputStateClass =
     answered && feedback
       ? feedback.correct
-        ? 'border-[var(--ok)]/50 bg-[var(--ok-dim)]'
-        : 'border-destructive/50 bg-destructive/10'
+        ? 'border-[var(--duo-correct-border)] bg-[var(--duo-correct-bg)]'
+        : 'border-[var(--duo-wrong-border)] bg-[var(--duo-wrong-bg)]'
       : '';
 
   return (
-    <Card className="border-border/70 transition-shadow duration-300 hover:brightness-[1.01]">
-      <CardHeader className="flex flex-row flex-wrap items-center gap-2 space-y-0 border-b border-border/60 bg-muted/15 px-4 py-3">
+    <Card className="transition-transform duration-150 hover:translate-y-[-1px]">
+      <CardHeader className="flex flex-row flex-wrap items-center gap-2 space-y-0 border-b-2 border-[var(--duo-border)] bg-muted/30 px-4 py-3.5 dark:border-border">
         {questionNumber != null && (
           <Badge
             variant="outline"
-            className="font-sans text-[10px] font-bold tracking-wider text-primary uppercase"
+            className="border-[var(--chart-2)]/40 font-sans text-[10px] font-extrabold tracking-wider text-[var(--chart-2)] uppercase"
             aria-label={`Question ${questionNumber}`}
           >
             Q{questionNumber}
@@ -172,25 +172,27 @@ export function ExerciseCard({
         )}
         <Badge
           variant="secondary"
-          className="font-sans text-[9px] font-bold tracking-[0.14em] uppercase"
+          className="border-2 border-[var(--duo-border)] font-sans text-[9px] font-extrabold tracking-[0.12em] uppercase dark:border-border"
         >
           {TYPE_LABELS[exercise.type]}
         </Badge>
-        <span className="ml-auto font-sans text-xs font-semibold text-muted-foreground">
+        <span className="ml-auto font-sans text-xs font-extrabold text-muted-foreground">
           {topicLabel}
         </span>
       </CardHeader>
 
       <CardContent className="space-y-4 pt-5">
-        <p className="text-sm text-muted-foreground">{exercise.instruction}</p>
+        <p className="font-sans text-sm font-bold text-muted-foreground">
+          {exercise.instruction}
+        </p>
 
         {exercise.type === 'fill_blank' && (
           <>
-            <p className="font-sans text-lg leading-relaxed text-foreground">
+            <p className="font-sans text-lg font-bold leading-relaxed text-foreground md:text-xl">
               {promptBlank(exercise.sentence)}
             </p>
             {exercise.hint && (
-              <p className="font-sans text-xs font-semibold text-muted-foreground">
+              <p className="font-sans text-xs font-extrabold text-muted-foreground">
                 Hint: {exercise.hint}
               </p>
             )}
@@ -220,10 +222,10 @@ export function ExerciseCard({
 
         {exercise.type === 'multiple_choice' && (
           <>
-            <p className="font-sans text-lg leading-relaxed text-foreground">
+            <p className="font-sans text-lg font-bold leading-relaxed text-foreground md:text-xl">
               {promptBlank(exercise.sentence)}
             </p>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {exercise.options.map((opt, i) => {
                 const correctIdx = exercise.correct_index;
                 let state: 'neutral' | 'correct' | 'wrong' = 'neutral';
@@ -238,15 +240,25 @@ export function ExerciseCard({
                     variant="outline"
                     disabled={answered}
                     className={cn(
-                      'h-auto min-h-10 justify-start gap-3 py-2.5 pr-4 pl-3 text-left font-sans whitespace-normal',
+                      'h-auto min-h-[3.25rem] justify-start gap-3 rounded-2xl py-3 pr-4 pl-3 text-left font-sans text-[15px] font-bold whitespace-normal',
+                      state === 'neutral' &&
+                        'active:translate-y-1 hover:border-[var(--chart-2)]/50 hover:bg-[var(--duo-nav-active)]',
                       state === 'correct' &&
-                        'border-[var(--ok)]/45 bg-[var(--ok-dim)] text-[var(--ok)] hover:bg-[var(--ok-dim)]',
+                        'border-[var(--duo-correct-border)] bg-[var(--duo-correct-bg)] text-[var(--ok)] shadow-none hover:bg-[var(--duo-correct-bg)]',
                       state === 'wrong' &&
-                        'border-destructive/45 bg-destructive/10 text-destructive hover:bg-destructive/10'
+                        'border-[var(--duo-wrong-border)] bg-[var(--duo-wrong-bg)] text-destructive shadow-none hover:bg-[var(--duo-wrong-bg)]'
                     )}
                     onClick={() => checkMC(i)}
                   >
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted font-sans text-xs font-bold text-muted-foreground">
+                    <span
+                      className={cn(
+                        'flex size-9 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--duo-border)] font-sans text-xs font-extrabold text-muted-foreground dark:border-border',
+                        state === 'correct' &&
+                          'border-[var(--duo-correct-border)] bg-card text-[var(--ok)]',
+                        state === 'wrong' &&
+                          'border-[var(--duo-wrong-border)] bg-card text-destructive'
+                      )}
+                    >
                       {['A', 'B', 'C', 'D'][i]}
                     </span>
                     {opt}
@@ -259,7 +271,7 @@ export function ExerciseCard({
 
         {exercise.type === 'error_correction' && (
           <>
-            <p className="text-lg leading-relaxed text-muted-foreground">
+            <p className="border-s-4 border-[var(--duo-wrong-border)] ps-3 font-sans text-lg font-bold leading-relaxed text-foreground md:text-xl">
               {exercise.wrong_sentence}
             </p>
             <Input
@@ -290,22 +302,26 @@ export function ExerciseCard({
       {feedback && (
         <CardFooter
           className={cn(
-            'mx-4 mb-4 flex flex-col items-stretch gap-2 rounded-2xl border-2 px-4 py-3',
+            'mx-4 mb-4 flex flex-col items-stretch gap-2 rounded-2xl border-2 px-4 py-4 shadow-[0_4px_0_0_var(--duo-border)] dark:shadow-[0_4px_0_0_var(--border)]',
             feedback.correct
-              ? 'border-[var(--ok)]/30 bg-[var(--ok-dim)]'
-              : 'border-destructive/30 bg-destructive/10'
+              ? 'duo-pop-in border-[var(--duo-correct-border)] bg-[var(--duo-correct-bg)]'
+              : 'duo-shake border-[var(--duo-wrong-border)] bg-[var(--duo-wrong-bg)]'
           )}
         >
           <p
             className={cn(
-              'font-sans text-[11px] font-bold tracking-[0.14em] uppercase',
+              'font-sans text-xs font-extrabold tracking-[0.12em] uppercase',
               feedback.correct ? 'text-[var(--ok)]' : 'text-destructive'
             )}
           >
             {feedback.correct ? 'Richtig!' : 'Falsch'}
           </p>
-          <div className="text-sm text-foreground">{feedback.main}</div>
-          <p className="text-sm text-muted-foreground">{feedback.explanation}</p>
+          <div className="font-sans text-sm font-bold text-foreground">
+            {feedback.main}
+          </div>
+          <p className="font-sans text-sm font-semibold text-muted-foreground">
+            {feedback.explanation}
+          </p>
         </CardFooter>
       )}
     </Card>

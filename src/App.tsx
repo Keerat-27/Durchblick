@@ -27,35 +27,35 @@ const SKILLS: {
   label: string;
   subtitle: string;
   icon: typeof BookOpen;
-  accent: string;
+  duoIconTint: string;
 }[] = [
   {
     id: 'lesen',
     label: 'Lesen',
     subtitle: 'Reading',
     icon: BookOpen,
-    accent: 'text-[var(--chart-2)]',
+    duoIconTint: 'text-[var(--chart-2)]',
   },
   {
     id: 'schreiben',
     label: 'Schreiben',
     subtitle: 'Writing',
     icon: PenLine,
-    accent: 'text-primary',
+    duoIconTint: 'text-primary',
   },
   {
     id: 'hoeren',
     label: 'Hören',
     subtitle: 'Listening',
     icon: Headphones,
-    accent: 'text-[var(--chart-4)]',
+    duoIconTint: 'text-[var(--chart-4)]',
   },
   {
     id: 'sprechen',
     label: 'Sprechen',
     subtitle: 'Speaking',
     icon: Mic,
-    accent: 'text-[var(--chart-3)]',
+    duoIconTint: 'text-[var(--chart-3)]',
   },
 ];
 
@@ -67,34 +67,40 @@ export default function App() {
     <>
       <div className="app-canvas" aria-hidden />
 
-      <div className="relative z-10 flex min-h-screen flex-col md:flex-row">
+      <div className="relative z-10 flex min-h-screen flex-col pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:flex-row md:pb-0">
         <aside
-          className="hidden shrink-0 flex-col overflow-visible border-e border-sidebar-border/80 bg-sidebar/85 backdrop-blur-xl md:flex md:w-[15.5rem] lg:w-64"
+          className="hidden shrink-0 flex-col overflow-visible border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:w-[17rem] lg:w-[18rem]"
           aria-label="Hauptnavigation"
         >
-          <div className="flex flex-col gap-3 border-b border-sidebar-border/60 px-5 py-8">
-            <p className="font-sans text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
-              Lernportal
+          <div className="flex flex-col gap-4 border-b-2 border-[var(--duo-border)] px-5 py-7">
+            <p className="font-sans text-[11px] font-extrabold tracking-[0.12em] text-muted-foreground uppercase">
+              Lernen
             </p>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <LayoutDashboard
-                  className="size-[1.35rem] shrink-0 text-primary"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
-                <span className="font-heading text-lg font-medium tracking-tight text-foreground/90">
-                  Dashboard
+                <span className="flex size-10 items-center justify-center rounded-2xl border-2 border-[var(--duo-border)] bg-muted shadow-[0_4px_0_0_var(--duo-border)]">
+                  <LayoutDashboard
+                    className="size-5 text-primary"
+                    strokeWidth={2.5}
+                    aria-hidden
+                  />
                 </span>
+                <div className="min-w-0">
+                  <p className="font-sans text-xs font-bold text-muted-foreground">
+                    Übersicht
+                  </p>
+                  <p className="app-wordmark truncate font-heading text-xl leading-tight">
+                    Deutsch
+                  </p>
+                </div>
               </div>
-              <p className="font-heading text-[1.35rem] leading-tight font-semibold tracking-tight">
-                <span className="app-wordmark">Deutsch</span>
-                <span className="text-foreground/75"> Trainer</span>
-              </p>
             </div>
           </div>
 
-          <nav className="flex flex-1 flex-col gap-1 px-3 py-4" aria-label="Fertigkeiten">
+          <nav
+            className="flex flex-1 flex-col gap-1.5 px-3 py-4"
+            aria-label="Fertigkeiten"
+          >
             {SKILLS.map((skill) => (
               <NavItem
                 key={skill.id}
@@ -105,53 +111,23 @@ export default function App() {
             ))}
           </nav>
 
-          <div className="border-t border-sidebar-border/60 p-4">
+          <div className="border-t-2 border-[var(--duo-border)] p-4">
             <ThemeToggle placement="sidebar" />
           </div>
         </aside>
 
-        <div className="sticky top-0 z-30 border-b border-border/50 bg-card/75 backdrop-blur-xl md:hidden">
-          <div className="flex items-center justify-between gap-2 px-4 py-3.5">
+        <div className="sticky top-0 z-30 border-b-2 border-[var(--duo-border)] bg-card md:hidden">
+          <div className="flex items-center justify-between gap-2 px-4 py-3">
             <div className="min-w-0">
-              <p className="truncate font-sans text-[9px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                Deutsch Trainer
+              <p className="truncate font-sans text-[10px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase">
+                Deutsch üben
               </p>
-              <p className="truncate font-heading text-base font-semibold tracking-tight">
-                <span className="app-wordmark">Dashboard</span>
+              <p className="app-wordmark truncate font-heading text-lg font-extrabold">
+                {current.label}
               </p>
             </div>
             <ThemeToggle placement="header" />
           </div>
-          <nav
-            className="flex gap-2 overflow-x-auto px-3 pb-3.5 pt-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            aria-label="Fertigkeiten"
-          >
-            {SKILLS.map((skill) => {
-              const Icon = skill.icon;
-              return (
-                <button
-                  key={skill.id}
-                  type="button"
-                  onClick={() => setActive(skill.id)}
-                  className={cn(
-                    'relative flex shrink-0 flex-col items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-[11px] font-semibold transition-all duration-200',
-                    active === skill.id
-                      ? 'bg-card text-foreground shadow-md ring-1 ring-primary/25'
-                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                  )}
-                >
-                  {active === skill.id && (
-                    <span
-                      className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-gradient-to-r from-primary via-[var(--chart-2)] to-[var(--chart-4)]"
-                      aria-hidden
-                    />
-                  )}
-                  <Icon className="size-5" strokeWidth={1.65} aria-hidden />
-                  <span className="max-w-[4.5rem] truncate">{skill.label}</span>
-                </button>
-              );
-            })}
-          </nav>
         </div>
 
         <main
@@ -159,37 +135,23 @@ export default function App() {
           className="min-h-0 flex-1 overflow-y-auto"
           aria-labelledby="dashboard-section-title"
         >
-          <div className="mx-auto max-w-3xl px-4 py-8 pb-20 md:max-w-4xl md:px-10 md:py-12 lg:max-w-5xl">
-            <header
-              className={cn(
-                'app-reveal app-main-surface relative mb-10 overflow-hidden rounded-[1.85rem] border border-border/45 bg-card/70 p-7 shadow-[0_1px_2px_oklch(0_0_0/0.04),0_24px_60px_-28px_oklch(0_0_0/0.14)] backdrop-blur-md md:mb-12 md:p-10',
-                'dark:border-border/35 dark:bg-card/50 dark:shadow-[0_1px_2px_oklch(0_0_0/0.15),0_28px_64px_-24px_oklch(0_0_0/0.5)]'
-              )}
-            >
-              <div
-                className="app-hero-glow -right-8 -top-20 size-[14rem] bg-gradient-to-br from-primary/30 via-[var(--chart-2)]/15 to-transparent md:right-4 md:top-1/2 md:size-[18rem] md:-translate-y-1/2"
-                aria-hidden
-              />
-              <div
-                className="app-hero-glow -bottom-24 -left-12 size-[11rem] bg-gradient-to-tr from-[var(--chart-4)]/25 to-transparent md:size-[14rem]"
-                aria-hidden
-              />
-
-              <div className="relative flex flex-col gap-6">
+          <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-4xl md:px-8 md:py-10 lg:max-w-5xl">
+            <header className="app-reveal app-main-surface relative mb-8 overflow-hidden rounded-2xl border-2 border-[var(--duo-border)] bg-card p-6 shadow-[0_4px_0_0_var(--duo-border)] md:mb-10 md:p-9">
+              <div className="relative flex flex-col gap-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-                  <div className="min-w-0 space-y-3">
-                    <p className="font-sans text-[11px] font-semibold tracking-[0.22em] text-primary uppercase">
+                  <div className="min-w-0 space-y-2">
+                    <p className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-[var(--chart-2)] uppercase">
                       {current.subtitle}
                     </p>
                     <div className="app-title-rule" aria-hidden />
                     <h1
                       id="dashboard-section-title"
-                      className="app-section-title font-heading text-[2.15rem] leading-[1.08] font-semibold tracking-tight md:text-4xl md:leading-[1.06]"
+                      className="app-section-title font-heading text-[1.85rem] leading-[1.1] md:text-[2.25rem]"
                     >
                       {current.label}
                     </h1>
                   </div>
-                  <p className="shrink-0 font-sans text-[11px] font-medium leading-relaxed tracking-wide text-muted-foreground sm:max-w-[12rem] sm:text-end">
+                  <p className="shrink-0 font-sans text-xs font-bold text-muted-foreground sm:max-w-[11rem] sm:text-end">
                     {new Intl.DateTimeFormat('de-DE', {
                       weekday: 'long',
                       day: 'numeric',
@@ -199,16 +161,15 @@ export default function App() {
                 </div>
 
                 {active === 'schreiben' && (
-                  <p className="max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground md:text-lg">
-                    Generate sets by topic and CEFR level (A1–B2). Open the
-                    reference drawer when you want Wikipedia extracts — keep it
-                    closed while you drill.
+                  <p className="max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground md:text-base">
+                    Erzeuge Sätze nach Thema und Niveau (A1–B2). Öffne die
+                    Grammatik-Referenz nur wenn du sie brauchst.
                   </p>
                 )}
               </div>
             </header>
 
-            <div className="animate-in fade-in duration-300">
+            <div className="animate-in fade-in duration-200">
               {active === 'lesen' && <LesenSection />}
               {active === 'schreiben' && <GrammarPracticeView />}
               {active === 'hoeren' && <HoerenSection />}
@@ -216,6 +177,48 @@ export default function App() {
             </div>
           </div>
         </main>
+
+        <nav
+          className="duo-mobile-tabbar fixed inset-x-0 bottom-0 z-40 flex border-t-2 border-[var(--duo-border)] bg-card md:hidden"
+          aria-label="Fertigkeiten"
+        >
+          {SKILLS.map((skill) => {
+            const Icon = skill.icon;
+            const isOn = active === skill.id;
+            return (
+              <button
+                key={skill.id}
+                type="button"
+                onClick={() => setActive(skill.id)}
+                className={cn(
+                  'flex min-h-[3.5rem] flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 font-sans text-[10px] font-extrabold transition-colors',
+                  isOn
+                    ? 'text-primary'
+                    : 'text-muted-foreground active:bg-muted/80'
+                )}
+              >
+                <span
+                  className={cn(
+                    'flex size-11 items-center justify-center rounded-2xl border-2 transition-all',
+                    isOn
+                      ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] shadow-[0_3px_0_0_var(--duo-nav-active-border)]'
+                      : 'border-transparent bg-transparent'
+                  )}
+                  aria-hidden
+                >
+                  <Icon
+                    className={cn(
+                      'size-6',
+                      isOn ? 'text-[var(--chart-2)]' : skill.duoIconTint
+                    )}
+                    strokeWidth={2.25}
+                  />
+                </span>
+                <span className="max-w-full truncate">{skill.label}</span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
     </>
   );
@@ -236,33 +239,30 @@ function NavItem({
       type="button"
       onClick={onSelect}
       className={cn(
-        'flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left text-sm font-semibold transition-all duration-200',
+        'group flex w-full items-center gap-3 rounded-2xl border-2 px-2 py-2 text-left font-sans text-[15px] font-extrabold transition-all duration-150',
         isActive
-          ? 'bg-card/95 text-foreground shadow-md ring-1 ring-border/50 dark:bg-card/60 dark:ring-border/40'
-          : 'text-sidebar-foreground/88 hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground'
+          ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-[0_4px_0_0_var(--duo-nav-active-border)]'
+          : 'border-transparent bg-transparent text-sidebar-foreground hover:bg-muted'
       )}
     >
-      {isActive ? (
-        <span
-          className="h-9 w-1 shrink-0 self-center rounded-full bg-gradient-to-b from-primary to-[var(--chart-2)] shadow-sm shadow-primary/15"
-          aria-hidden
-        />
-      ) : (
-        <span className="w-1 shrink-0 self-center" aria-hidden />
-      )}
       <span
         className={cn(
-          'flex size-10 shrink-0 items-center justify-center rounded-xl border transition-colors',
+          'flex size-11 shrink-0 items-center justify-center rounded-xl border-2 transition-all',
           isActive
-            ? 'border-primary/25 bg-primary/10 text-primary'
-            : 'border-border/50 bg-card/60 text-muted-foreground',
-          !isActive && skill.accent
+            ? 'border-[var(--chart-2)]/35 bg-card text-[var(--chart-2)] shadow-[0_3px_0_0_var(--duo-border)]'
+            : 'border-[var(--duo-border)] bg-card text-muted-foreground shadow-[0_3px_0_0_var(--duo-border)] group-hover:text-foreground'
         )}
         aria-hidden
       >
-        <Icon className="size-[18px]" strokeWidth={1.65} />
+        <Icon className="size-[22px]" strokeWidth={2.25} />
       </span>
       <span className="min-w-0 flex-1 truncate">{skill.label}</span>
+      {isActive && (
+        <span
+          className="size-2 shrink-0 rounded-full bg-primary"
+          aria-hidden
+        />
+      )}
     </button>
   );
 }

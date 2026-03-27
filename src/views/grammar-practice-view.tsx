@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { BookOpen, Loader2 } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { ExerciseCard } from '@/components/exercise-card';
 import { GrammarRulesPanel } from '@/components/grammar-rules-panel';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -96,12 +96,12 @@ export function GrammarPracticeView() {
       >
         <h2
           id="topic-heading"
-          className="font-sans text-[11px] font-bold tracking-[0.16em] text-muted-foreground uppercase"
+          className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase"
         >
           Topic
         </h2>
         <div
-          className="mt-3 flex flex-wrap gap-2"
+          className="mt-3 flex flex-wrap gap-2.5"
           role="tablist"
           aria-label="Grammar topics"
         >
@@ -114,8 +114,10 @@ export function GrammarPracticeView() {
               size="sm"
               variant={topic === t.id ? 'default' : 'outline'}
               className={cn(
-                'rounded-full border-border/80 font-sans text-sm transition-transform hover:-translate-y-px',
-                topic === t.id && 'shadow-md shadow-primary/15'
+                'rounded-full border-2 px-4 font-sans text-[13px] font-extrabold transition-transform duration-100',
+                topic === t.id
+                  ? 'shadow-[0_4px_0_0_var(--primary-shadow)] hover:-translate-y-px'
+                  : 'border-[var(--duo-border-strong)] shadow-[0_4px_0_0_var(--duo-border-strong)] hover:-translate-y-px hover:bg-muted dark:border-input dark:shadow-[0_4px_0_0_var(--border)]'
               )}
               onClick={() => onTopicChange(t.id)}
             >
@@ -127,14 +129,14 @@ export function GrammarPracticeView() {
 
       <div className="app-reveal app-reveal-delay-2 space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="font-sans text-[11px] font-bold tracking-[0.16em] text-muted-foreground uppercase">
+          <h2 className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase">
             Practice
           </h2>
           <Button
             type="button"
             variant={referenceOpen ? 'default' : 'outline'}
             size="sm"
-            className="w-fit gap-2 font-sans text-[11px] font-bold tracking-[0.12em] uppercase"
+            className="w-fit gap-2 rounded-full font-sans text-[11px] font-extrabold tracking-[0.12em] uppercase"
             aria-expanded={referenceOpen}
             aria-controls="grammar-reference-sheet"
             onClick={() => setReferenceOpen((open) => !open)}
@@ -205,38 +207,38 @@ export function GrammarPracticeView() {
           </Button>
         </div>
 
-        <Card className="border-border/70 bg-card/80 shadow-sm backdrop-blur-sm">
+        <Card className="bg-[var(--duo-nav-active)]/40 dark:bg-card">
           <CardContent className="flex flex-wrap gap-x-8 gap-y-3 py-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 font-sans text-sm font-bold text-muted-foreground">
               <span
-                className="size-2 shrink-0 rounded-full bg-muted-foreground/50"
+                className="size-2.5 shrink-0 rounded-full bg-muted-foreground/45"
                 aria-hidden
               />
-              <span className="font-sans text-base font-bold text-foreground tabular-nums">
+              <span className="text-lg font-extrabold text-foreground tabular-nums">
                 {score.total}
               </span>
               <span>attempted</span>
             </div>
             <Separator
               orientation="vertical"
-              className="hidden h-6 sm:block"
+              className="hidden h-7 sm:block"
             />
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 font-sans text-sm font-bold text-muted-foreground">
               <span
-                className="size-2 shrink-0 rounded-full bg-[var(--ok)]"
+                className="size-2.5 shrink-0 rounded-full bg-primary"
                 aria-hidden
               />
-              <span className="font-sans text-base font-bold text-[var(--ok)] tabular-nums">
+              <span className="text-lg font-extrabold text-primary tabular-nums">
                 {score.correct}
               </span>
               <span>correct</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 font-sans text-sm font-bold text-muted-foreground">
               <span
-                className="size-2 shrink-0 rounded-full bg-destructive"
+                className="size-2.5 shrink-0 rounded-full bg-destructive"
                 aria-hidden
               />
-              <span className="font-sans text-base font-bold text-destructive tabular-nums">
+              <span className="text-lg font-extrabold text-destructive tabular-nums">
                 {score.wrong}
               </span>
               <span>wrong</span>
@@ -245,26 +247,42 @@ export function GrammarPracticeView() {
         </Card>
 
         {error && (
-          <Alert variant="destructive" className="border-destructive/40">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+          <Alert
+            variant="destructive"
+            className="rounded-2xl border-2 border-[var(--duo-wrong-border)] bg-[var(--duo-wrong-bg)]"
+          >
+            <AlertTitle className="font-sans font-extrabold">Error</AlertTitle>
+            <AlertDescription className="font-sans font-semibold">
+              {error}
+            </AlertDescription>
           </Alert>
         )}
 
         {partialNotice && !error && (
-          <Alert className="border-primary/25 bg-primary/5">
-            <AlertTitle className="text-foreground">Note</AlertTitle>
-            <AlertDescription>{partialNotice}</AlertDescription>
+          <Alert className="rounded-2xl border-2 border-[var(--chart-2)]/35 bg-[var(--duo-nav-active)]">
+            <AlertTitle className="font-sans font-extrabold text-foreground">
+              Note
+            </AlertTitle>
+            <AlertDescription className="font-sans font-semibold">
+              {partialNotice}
+            </AlertDescription>
           </Alert>
         )}
 
         {loading && (
-          <div className="flex flex-col items-center gap-3 py-10 text-muted-foreground">
-            <Loader2
-              className="size-9 animate-spin text-primary"
+          <div
+            className="flex flex-col items-center gap-4 py-12 text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <span
+              className="size-14 shrink-0 rounded-full border-4 border-[var(--duo-border)] border-t-primary animate-spin dark:border-border"
               aria-hidden
             />
-            <p className="font-sans text-sm font-bold tracking-wide">Loading…</p>
+            <p className="font-sans text-sm font-extrabold tracking-wide">
+              Loading…
+            </p>
           </div>
         )}
 
@@ -288,13 +306,15 @@ export function GrammarPracticeView() {
         )}
 
         {!loading && exercises.length === 0 && !error && (
-          <Card className="app-reveal app-reveal-delay-3 border-dashed border-border/80 bg-muted/20">
-            <CardContent className="flex flex-col items-center gap-3 py-14 text-center">
-              <span className="font-heading text-3xl font-bold text-primary/50">de/</span>
-              <p className="font-heading max-w-sm text-lg text-foreground">
+          <Card className="app-reveal app-reveal-delay-3 border-dashed border-[var(--duo-border-strong)] bg-muted/25 dark:border-border">
+            <CardContent className="flex flex-col items-center gap-4 py-14 text-center">
+              <span className="flex size-16 items-center justify-center rounded-full border-4 border-dashed border-primary/35 bg-[var(--duo-correct-bg)] font-heading text-2xl font-extrabold text-primary">
+                DE
+              </span>
+              <p className="max-w-sm font-heading text-lg font-extrabold text-foreground md:text-xl">
                 Choose topic, level, and size — then generate a set
               </p>
-              <p className="max-w-md text-sm text-muted-foreground">
+              <p className="max-w-md font-sans text-sm font-semibold text-muted-foreground">
                 Several questions appear together. Use “Grammar reference” for
                 Wikipedia extracts when you want them.
               </p>
@@ -308,10 +328,10 @@ export function GrammarPracticeView() {
           id="grammar-reference-sheet"
           side="left"
           showCloseButton
-          className="w-full gap-0 border-border bg-card p-0 sm:max-w-md"
+          className="w-full gap-0 border-[var(--duo-border)] bg-card p-0 sm:max-w-md dark:border-border"
         >
-          <SheetHeader className="border-b border-border px-5 py-4 text-left">
-            <SheetTitle className="font-sans text-[11px] font-bold tracking-[0.18em] text-muted-foreground uppercase">
+          <SheetHeader className="border-b-2 border-[var(--duo-border)] px-5 py-4 text-left dark:border-border">
+            <SheetTitle className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase">
               Grammar reference
             </SheetTitle>
           </SheetHeader>

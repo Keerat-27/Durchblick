@@ -68,12 +68,12 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
     <section className="min-w-0" aria-labelledby="grammar-heading">
       <Card className="border-border/60 bg-transparent shadow-none ring-0">
         <CardContent className="space-y-4 px-0">
-          <p className="font-sans font-bold text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+          <p className="font-sans text-[10px] font-extrabold tracking-[0.16em] text-muted-foreground uppercase">
             {topicLabel}
           </p>
           <h2
             id="grammar-heading"
-            className="font-heading text-2xl leading-tight font-semibold tracking-tight text-foreground"
+            className="font-heading text-2xl leading-tight font-extrabold tracking-tight text-foreground"
           >
             {wikiLoading ? topicLabel : displayTitle}
           </h2>
@@ -85,7 +85,7 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
             headlineDe &&
             !headlineEn &&
             wiki?.de && (
-              <p className="font-sans text-xs font-semibold text-muted-foreground">
+              <p className="font-sans text-xs font-bold text-muted-foreground">
                 {articleHost(wiki.de.url)}
               </p>
             )}
@@ -94,7 +94,7 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
             headlineEn &&
             !headlineDe &&
             wiki?.en && (
-              <p className="font-sans text-xs font-semibold text-muted-foreground">
+              <p className="font-sans text-xs font-bold text-muted-foreground">
                 {articleHost(wiki.en.url)}
               </p>
             )}
@@ -111,26 +111,26 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
             <>
               <div
                 className={cn(
-                  'grid gap-0 overflow-hidden rounded-lg border border-border/80',
+                  'grid gap-0 overflow-hidden rounded-2xl border-2 border-[var(--duo-border)] dark:border-border',
                   wiki.en && wiki.de ? 'md:grid-cols-2' : 'grid-cols-1'
                 )}
                 role="presentation"
               >
                 {wiki.en && (
                   <article
-                    className="flex min-h-0 flex-col gap-0 bg-muted/25 p-4 md:border-r md:border-border/60"
+                    className="flex min-h-0 flex-col gap-0 bg-muted/25 p-4 md:border-r-2 md:border-[var(--duo-border)] dark:md:border-border"
                     aria-label="English Wikipedia extract"
                   >
-                    <h3 className="mb-3 flex flex-wrap items-center justify-between gap-2 font-heading text-base font-medium">
+                    <h3 className="mb-3 flex flex-wrap items-center justify-between gap-2 font-heading text-base font-extrabold">
                       <a
                         href={wiki.en.url}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="border-b border-border text-foreground decoration-transparent transition-colors hover:border-primary hover:text-primary"
+                        className="border-b-2 border-transparent text-foreground decoration-transparent transition-colors hover:border-[var(--chart-2)] hover:text-[var(--chart-2)]"
                       >
                         {wiki.en.title}
                       </a>
-                      <span className="font-sans font-bold text-[9px] tracking-widest text-muted-foreground uppercase">
+                      <span className="font-sans text-[9px] font-extrabold tracking-widest text-muted-foreground uppercase">
                         EN
                       </span>
                     </h3>
@@ -149,7 +149,7 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
                       </div>
                     </ScrollArea>
                     <a
-                      className="mt-3 inline-block font-sans font-bold text-[11px] tracking-wide text-primary"
+                      className="mt-3 inline-block font-sans text-[11px] font-extrabold tracking-wide text-[var(--chart-2)]"
                       href={wiki.en.url}
                       target="_blank"
                       rel="noreferrer noopener"
@@ -163,16 +163,16 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
                     className="flex min-h-0 flex-col gap-0 bg-muted/15 p-4"
                     aria-label="German Wikipedia extract"
                   >
-                    <h3 className="mb-3 flex flex-wrap items-center justify-between gap-2 font-heading text-base font-medium">
+                    <h3 className="mb-3 flex flex-wrap items-center justify-between gap-2 font-heading text-base font-extrabold">
                       <a
                         href={wiki.de.url}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="border-b border-border text-foreground decoration-transparent transition-colors hover:border-primary hover:text-primary"
+                        className="border-b-2 border-transparent text-foreground decoration-transparent transition-colors hover:border-[var(--chart-2)] hover:text-[var(--chart-2)]"
                       >
                         {wiki.de.title}
                       </a>
-                      <span className="font-sans font-bold text-[9px] tracking-widest text-muted-foreground uppercase">
+                      <span className="font-sans text-[9px] font-extrabold tracking-widest text-muted-foreground uppercase">
                         DE
                       </span>
                     </h3>
@@ -191,7 +191,7 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
                       </div>
                     </ScrollArea>
                     <a
-                      className="mt-3 inline-block font-sans font-bold text-[11px] tracking-wide text-primary"
+                      className="mt-3 inline-block font-sans text-[11px] font-extrabold tracking-wide text-[var(--chart-2)]"
                       href={wiki.de.url}
                       target="_blank"
                       rel="noreferrer noopener"
@@ -201,13 +201,13 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
                   </article>
                 )}
               </div>
-              <Separator className="bg-border/80" />
-              <p className="text-[11px] leading-relaxed text-muted-foreground">
+              <Separator className="bg-[var(--duo-border)] dark:bg-border" />
+              <p className="font-sans text-[11px] font-semibold leading-relaxed text-muted-foreground">
                 <a
                   href="https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="text-primary underline-offset-2 hover:underline"
+                  className="font-extrabold text-[var(--chart-2)] underline-offset-2 hover:underline"
                 >
                   Wikipedia
                 </a>
@@ -216,7 +216,7 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
                   href="https://creativecommons.org/licenses/by-sa/4.0/"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="text-primary underline-offset-2 hover:underline"
+                  className="font-extrabold text-[var(--chart-2)] underline-offset-2 hover:underline"
                 >
                   CC BY-SA 4.0
                 </a>
@@ -227,10 +227,10 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
 
           {!wikiLoading && !wiki && (
             <div
-              className="flex flex-col gap-3 rounded-lg border border-border/80 bg-muted/20 p-4"
+              className="flex flex-col gap-3 rounded-2xl border-2 border-[var(--duo-border)] bg-muted/25 p-4 dark:border-border"
               role="alert"
             >
-              <p className="text-sm text-muted-foreground">
+              <p className="font-sans text-sm font-semibold text-muted-foreground">
                 {wikiError === 'empty'
                   ? 'No extract returned for this topic.'
                   : wikiError
@@ -241,7 +241,7 @@ export function GrammarRulesPanel({ topicId, topicLabel }: Props) {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="w-fit font-sans font-bold text-[10px] tracking-widest uppercase"
+                className="w-fit rounded-full font-sans text-[10px] font-extrabold tracking-widest uppercase"
                 onClick={() => {
                   setWikiError(null);
                   setWikiLoading(true);
