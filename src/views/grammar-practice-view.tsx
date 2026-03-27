@@ -29,6 +29,7 @@ import {
 import type { Exercise } from '@/types/exercise';
 import { pickExercises } from '@/utils/pick-exercise';
 import { cn } from '@/lib/utils';
+import { useLearningProgress } from '@/contexts/learning-progress-context';
 
 /** Grammar and writing practice (Schreiben) — topic sets, levels, exercise cards. */
 export function GrammarPracticeView() {
@@ -43,15 +44,21 @@ export function GrammarPracticeView() {
   const [referenceOpen, setReferenceOpen] = useState(false);
   const [partialNotice, setPartialNotice] = useState<string | null>(null);
 
+  const { recordAttempt, recordNewSet } = useLearningProgress();
+
   const topicLabel = TOPICS.find((t) => t.id === topic)?.label ?? topic;
 
-  const onResult = useCallback((correct: boolean) => {
-    setScore((s) => ({
-      total: s.total + 1,
-      correct: s.correct + (correct ? 1 : 0),
-      wrong: s.wrong + (correct ? 0 : 1),
-    }));
-  }, []);
+  const onResult = useCallback(
+    (correct: boolean) => {
+      recordAttempt(correct);
+      setScore((s) => ({
+        total: s.total + 1,
+        correct: s.correct + (correct ? 1 : 0),
+        wrong: s.wrong + (correct ? 0 : 1),
+      }));
+    },
+    [recordAttempt]
+  );
 
   function onTopicChange(next: TopicId) {
     setTopic(next);
@@ -78,6 +85,7 @@ export function GrammarPracticeView() {
           `Showing all ${list.length} exercise${list.length === 1 ? '' : 's'} available for this topic and level (you asked for ${setSize}).`
         );
       }
+      recordNewSet();
       setSetId((n) => n + 1);
       setExercises(list);
     } catch {

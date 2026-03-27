@@ -7,12 +7,14 @@ import {
   LogOut,
   Mic,
   PenLine,
+  UserRound,
 } from 'lucide-react';
 import '@/app.css';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { GrammarPracticeView } from '@/views/grammar-practice-view';
+import { ProfileView } from '@/views/profile-view';
 import { useAuth } from '@/contexts/auth-context';
 
 export type SkillSectionId =
@@ -20,6 +22,8 @@ export type SkillSectionId =
   | 'schreiben'
   | 'hoeren'
   | 'sprechen';
+
+export type DashboardSectionId = SkillSectionId | 'profil';
 
 const SKILLS: {
   id: SkillSectionId;
@@ -58,9 +62,22 @@ const SKILLS: {
   },
 ];
 
+const PROFILE_SECTION = {
+  id: 'profil' as const,
+  label: 'Profil',
+  subtitle: 'Statistiken & Konto',
+  icon: UserRound,
+  duoIconTint: 'text-[var(--chart-5)]',
+};
+
+function sectionMeta(active: DashboardSectionId) {
+  if (active === 'profil') return PROFILE_SECTION;
+  return SKILLS.find((s) => s.id === active)!;
+}
+
 export function DashboardApp() {
-  const [active, setActive] = useState<SkillSectionId>('lesen');
-  const current = SKILLS.find((s) => s.id === active)!;
+  const [active, setActive] = useState<DashboardSectionId>('lesen');
+  const current = sectionMeta(active);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -119,9 +136,6 @@ export function DashboardApp() {
           </nav>
 
           <div className="mt-auto">
-            <div className="p-4 pb-3">
-              <ThemeToggle variant="bar" placement="sidebar" />
-            </div>
             <div className="space-y-3 border-t-2 border-[var(--duo-border)] p-4 pt-3">
               {user && (
                 <>
@@ -149,37 +163,48 @@ export function DashboardApp() {
           </div>
         </aside>
 
-        <div className="sticky top-0 z-30 border-b-2 border-[var(--duo-border)] bg-card md:hidden">
-          <div className="flex items-center justify-between gap-2 px-4 py-3">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <header
+            className="sticky top-0 z-30 flex shrink-0 items-center justify-between gap-3 border-b-2 border-[var(--duo-border)] bg-card/95 px-4 py-3 backdrop-blur-md supports-[backdrop-filter]:bg-card/80 md:px-6 md:py-3.5"
+            aria-label="Kopfzeile"
+          >
             <div className="min-w-0">
-              <p className="app-wordmark truncate font-heading text-base font-extrabold tracking-tight">
+              <p className="app-wordmark truncate font-heading text-base font-extrabold tracking-tight md:text-lg">
                 Durchblick
               </p>
-              <p className="truncate font-heading text-sm font-extrabold text-foreground">
+              <p className="truncate font-heading text-sm font-extrabold text-foreground md:hidden">
+                {current.label}
+              </p>
+              <p className="hidden truncate font-sans text-xs font-extrabold text-muted-foreground md:block">
+                <span className="text-[var(--chart-2)]">{current.subtitle}</span>
+                <span className="text-muted-foreground"> · </span>
                 {current.label}
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground"
-                aria-label="Abmelden"
-                onClick={() => void handleLogout()}
-              >
-                <LogOut className="size-[18px]" aria-hidden />
-              </Button>
+            <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
               <ThemeToggle placement="header" />
+              <button
+                type="button"
+                className={cn(
+                  'inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 bg-card font-sans transition-all outline-none hover:brightness-[1.02] focus-visible:border-[var(--chart-2)] focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35 active:translate-y-1 active:shadow-none',
+                  active === 'profil'
+                    ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-[0_4px_0_0_var(--duo-nav-active-border)] hover:bg-[var(--duo-nav-active)]'
+                    : 'border-[var(--duo-border-strong)] text-muted-foreground shadow-[0_4px_0_0_var(--duo-border-strong)] hover:bg-muted dark:border-input dark:bg-input/30 dark:text-foreground dark:shadow-[0_4px_0_0_var(--border)] dark:hover:bg-input/50'
+                )}
+                aria-label="Profil öffnen"
+                aria-pressed={active === 'profil'}
+                onClick={() => setActive('profil')}
+              >
+                <UserRound className="size-4" strokeWidth={2.25} aria-hidden />
+              </button>
             </div>
-          </div>
-        </div>
+          </header>
 
-        <main
-          id="dashboard-main"
-          className="min-h-0 flex-1 overflow-y-auto"
-          aria-labelledby="dashboard-section-title"
-        >
+          <main
+            id="dashboard-main"
+            className="min-h-0 flex-1 overflow-y-auto"
+            aria-labelledby="dashboard-section-title"
+          >
           <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-4xl md:px-8 md:py-10 lg:max-w-5xl">
             <header className="app-reveal app-main-surface relative mb-8 overflow-hidden rounded-2xl border-2 border-[var(--duo-border)] bg-card p-6 shadow-[0_4px_0_0_var(--duo-border)] md:mb-10 md:p-9">
               <div className="relative flex flex-col gap-5">
@@ -211,6 +236,12 @@ export function DashboardApp() {
                     Grammatik-Referenz nur wenn du sie brauchst.
                   </p>
                 )}
+                {active === 'profil' && (
+                  <p className="max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground md:text-base">
+                    Sieh Serien, Genauigkeit und Übungsvolumen — alles aus deinen
+                    Aktivitäten unter Schreiben.
+                  </p>
+                )}
               </div>
             </header>
 
@@ -219,8 +250,14 @@ export function DashboardApp() {
                 <GrammarPracticeView />
               </div>
             )}
+            {active === 'profil' && (
+              <div className="animate-in fade-in duration-200">
+                <ProfileView />
+              </div>
+            )}
           </div>
         </main>
+        </div>
 
         <nav
           className="duo-mobile-tabbar fixed inset-x-0 bottom-0 z-40 flex border-t-2 border-[var(--duo-border)] bg-card md:hidden"
@@ -235,7 +272,7 @@ export function DashboardApp() {
                 type="button"
                 onClick={() => setActive(skill.id)}
                 className={cn(
-                  'flex min-h-[3.5rem] flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 font-sans text-[10px] font-extrabold transition-colors',
+                  'flex min-h-[3.5rem] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 font-sans text-[10px] font-extrabold transition-colors',
                   isOn
                     ? 'text-primary'
                     : 'text-muted-foreground active:bg-muted/80'
