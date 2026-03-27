@@ -12,6 +12,7 @@ import {
 import '@/app.css';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
+import { duoPressParent, duoPressShadowChild } from '@/lib/duo-press';
 import { cn } from '@/lib/utils';
 import { GrammarPracticeView } from '@/views/grammar-practice-view';
 import { ProfileView } from '@/views/profile-view';
@@ -70,6 +71,10 @@ const PROFILE_SECTION = {
   duoIconTint: 'text-[var(--chart-5)]',
 };
 
+/** Same height row as top header on md+ so the border under the logo lines up. */
+const DASHBOARD_MD_HEADER_ROW =
+  'md:flex md:min-h-[5.25rem] md:items-center md:py-0';
+
 function sectionMeta(active: DashboardSectionId) {
   if (active === 'profil') return PROFILE_SECTION;
   return SKILLS.find((s) => s.id === active)!;
@@ -95,29 +100,23 @@ export function DashboardApp() {
           className="hidden shrink-0 flex-col overflow-visible border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:min-h-screen md:w-[17rem] lg:w-[18rem]"
           aria-label="Hauptnavigation"
         >
-          <div className="border-b-2 border-[var(--duo-border)] px-4 py-5 md:px-5">
-            <div className="app-brand-card relative overflow-hidden rounded-2xl border-2 border-[var(--duo-border)] bg-card shadow-[0_5px_0_0_var(--duo-border)] dark:border-border dark:shadow-[0_5px_0_0_var(--border)]">
-              <div
-                className="h-1.5 w-full bg-primary shadow-[inset_0_-3px_0_0_var(--primary-shadow)]"
-                aria-hidden
-              />
-              <div className="flex items-start gap-3 p-4">
-                <span className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--primary-shadow)] bg-primary text-primary-foreground shadow-[0_4px_0_0_var(--primary-shadow)]">
-                  <Languages
-                    className="size-7"
-                    strokeWidth={2.5}
-                    aria-hidden
-                  />
-                </span>
-                <div className="min-w-0 flex-1 pt-0.5">
-                  <p className="font-sans text-[10px] font-extrabold tracking-[0.18em] text-muted-foreground uppercase">
-                    Lernportal
-                  </p>
-                  <p className="app-wordmark mt-1 font-heading text-[1.65rem] leading-[1.05] font-extrabold tracking-[-0.03em]">
-                    Durchblick
-                  </p>
-                </div>
-              </div>
+          <div
+            className={cn(
+              'border-b-2 border-[var(--duo-border)] px-4 py-3 md:px-5',
+              DASHBOARD_MD_HEADER_ROW
+            )}
+          >
+            <div className="flex min-w-0 items-center gap-3 md:gap-3">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--primary-shadow)] bg-primary text-primary-foreground shadow-[0_4px_0_0_var(--primary-shadow)] md:size-[3.25rem]">
+                <Languages
+                  className="size-[1.35rem] md:size-7"
+                  strokeWidth={2.5}
+                  aria-hidden
+                />
+              </span>
+              <p className="app-wordmark min-w-0 truncate font-heading text-2xl font-extrabold leading-tight tracking-tight md:text-[1.65rem] md:leading-[1.1]">
+                Durchblick
+              </p>
             </div>
           </div>
 
@@ -165,17 +164,17 @@ export function DashboardApp() {
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <header
-            className="sticky top-0 z-30 flex shrink-0 items-center justify-between gap-3 border-b-2 border-[var(--duo-border)] bg-card/95 px-4 py-3 backdrop-blur-md supports-[backdrop-filter]:bg-card/80 md:px-6 md:py-3.5"
+            className={cn(
+              'sticky top-0 z-30 flex shrink-0 items-center justify-between gap-3 border-b-2 border-[var(--duo-border)] bg-card/95 px-4 py-3 backdrop-blur-md supports-[backdrop-filter]:bg-card/80 md:px-6',
+              DASHBOARD_MD_HEADER_ROW
+            )}
             aria-label="Kopfzeile"
           >
             <div className="min-w-0">
-              <p className="app-wordmark truncate font-heading text-base font-extrabold tracking-tight md:text-lg">
-                Durchblick
-              </p>
               <p className="truncate font-heading text-sm font-extrabold text-foreground md:hidden">
                 {current.label}
               </p>
-              <p className="hidden truncate font-sans text-xs font-extrabold text-muted-foreground md:block">
+              <p className="hidden truncate font-sans text-xs font-extrabold text-muted-foreground md:block md:text-sm">
                 <span className="text-[var(--chart-2)]">{current.subtitle}</span>
                 <span className="text-muted-foreground"> · </span>
                 {current.label}
@@ -186,7 +185,8 @@ export function DashboardApp() {
               <button
                 type="button"
                 className={cn(
-                  'inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 bg-card font-sans transition-all outline-none hover:brightness-[1.02] focus-visible:border-[var(--chart-2)] focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35 active:translate-y-1 active:shadow-none',
+                  'inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 bg-card font-sans hover:brightness-[1.02] focus-visible:border-[var(--chart-2)] focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35',
+                  duoPressParent,
                   active === 'profil'
                     ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-[0_4px_0_0_var(--duo-nav-active-border)] hover:bg-[var(--duo-nav-active)]'
                     : 'border-[var(--duo-border-strong)] text-muted-foreground shadow-[0_4px_0_0_var(--duo-border-strong)] hover:bg-muted dark:border-input dark:bg-input/30 dark:text-foreground dark:shadow-[0_4px_0_0_var(--border)] dark:hover:bg-input/50'
@@ -273,6 +273,7 @@ export function DashboardApp() {
                 onClick={() => setActive(skill.id)}
                 className={cn(
                   'flex min-h-[3.5rem] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 font-sans text-[10px] font-extrabold transition-colors',
+                  duoPressParent,
                   isOn
                     ? 'text-primary'
                     : 'text-muted-foreground active:bg-muted/80'
@@ -281,6 +282,7 @@ export function DashboardApp() {
                 <span
                   className={cn(
                     'flex size-11 items-center justify-center rounded-2xl border-2 transition-all',
+                    duoPressShadowChild,
                     isOn
                       ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] shadow-[0_3px_0_0_var(--duo-nav-active-border)]'
                       : 'border-transparent bg-transparent'
@@ -320,7 +322,8 @@ function NavItem({
       type="button"
       onClick={onSelect}
       className={cn(
-        'group flex w-full items-center gap-3 rounded-2xl border-2 px-2 py-2 text-left font-sans text-[15px] font-extrabold transition-all duration-150',
+        'flex w-full items-center gap-3 rounded-2xl border-2 px-2 py-2 text-left font-sans text-[15px] font-extrabold',
+        duoPressParent,
         isActive
           ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-[0_4px_0_0_var(--duo-nav-active-border)]'
           : 'border-transparent bg-transparent text-sidebar-foreground hover:bg-muted'
@@ -329,6 +332,7 @@ function NavItem({
       <span
         className={cn(
           'flex size-11 shrink-0 items-center justify-center rounded-xl border-2 transition-all',
+          duoPressShadowChild,
           isActive
             ? 'border-[var(--chart-2)]/35 bg-card text-[var(--chart-2)] shadow-[0_3px_0_0_var(--duo-border)]'
             : 'border-[var(--duo-border)] bg-card text-muted-foreground shadow-[0_3px_0_0_var(--duo-border)] group-hover:text-foreground'
