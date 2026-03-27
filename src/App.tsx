@@ -10,11 +10,6 @@ import './app.css';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { GrammarPracticeView } from '@/views/grammar-practice-view';
-import {
-  HoerenSection,
-  LesenSection,
-  SprechenSection,
-} from '@/views/skill-placeholder-sections';
 
 export type SkillSectionId =
   | 'lesen'
@@ -72,25 +67,26 @@ export default function App() {
           className="hidden shrink-0 flex-col overflow-visible border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:w-[17rem] lg:w-[18rem]"
           aria-label="Hauptnavigation"
         >
-          <div className="flex flex-col gap-4 border-b-2 border-[var(--duo-border)] px-5 py-7">
-            <p className="font-sans text-[11px] font-extrabold tracking-[0.12em] text-muted-foreground uppercase">
-              Lernen
-            </p>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="flex size-10 items-center justify-center rounded-2xl border-2 border-[var(--duo-border)] bg-muted shadow-[0_4px_0_0_var(--duo-border)]">
+          <div className="border-b-2 border-[var(--duo-border)] px-4 py-5 md:px-5">
+            <div className="app-brand-card relative overflow-hidden rounded-2xl border-2 border-[var(--duo-border)] bg-card shadow-[0_5px_0_0_var(--duo-border)] dark:border-border dark:shadow-[0_5px_0_0_var(--border)]">
+              <div
+                className="h-1.5 w-full bg-primary shadow-[inset_0_-3px_0_0_var(--primary-shadow)]"
+                aria-hidden
+              />
+              <div className="flex items-start gap-3 p-4">
+                <span className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--primary-shadow)] bg-primary text-primary-foreground shadow-[0_4px_0_0_var(--primary-shadow)]">
                   <LayoutDashboard
-                    className="size-5 text-primary"
-                    strokeWidth={2.5}
+                    className="size-7"
+                    strokeWidth={2.75}
                     aria-hidden
                   />
                 </span>
-                <div className="min-w-0">
-                  <p className="font-sans text-xs font-bold text-muted-foreground">
-                    Übersicht
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <p className="font-sans text-[10px] font-extrabold tracking-[0.18em] text-muted-foreground uppercase">
+                    Lernportal
                   </p>
-                  <p className="app-wordmark truncate font-heading text-xl leading-tight">
-                    Deutsch
+                  <p className="app-wordmark mt-1 font-heading text-[1.65rem] leading-[1.05] font-extrabold tracking-[-0.03em]">
+                    Durchblick
                   </p>
                 </div>
               </div>
@@ -119,10 +115,10 @@ export default function App() {
         <div className="sticky top-0 z-30 border-b-2 border-[var(--duo-border)] bg-card md:hidden">
           <div className="flex items-center justify-between gap-2 px-4 py-3">
             <div className="min-w-0">
-              <p className="truncate font-sans text-[10px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase">
-                Deutsch üben
+              <p className="app-wordmark truncate font-heading text-base font-extrabold tracking-tight">
+                Durchblick
               </p>
-              <p className="app-wordmark truncate font-heading text-lg font-extrabold">
+              <p className="truncate font-heading text-sm font-extrabold text-foreground">
                 {current.label}
               </p>
             </div>
@@ -169,12 +165,11 @@ export default function App() {
               </div>
             </header>
 
-            <div className="animate-in fade-in duration-200">
-              {active === 'lesen' && <LesenSection />}
-              {active === 'schreiben' && <GrammarPracticeView />}
-              {active === 'hoeren' && <HoerenSection />}
-              {active === 'sprechen' && <SprechenSection />}
-            </div>
+            {active === 'schreiben' && (
+              <div className="animate-in fade-in duration-200">
+                <GrammarPracticeView />
+              </div>
+            )}
           </div>
         </main>
 

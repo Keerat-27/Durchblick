@@ -220,6 +220,10 @@ html {
   letter-spacing: -0.02em;
 }
 
+.app-brand-card {
+  isolation: isolate;
+}
+
 .app-section-title {
   color: var(--foreground);
   font-weight: 800;

@@ -36,23 +36,6 @@
   box-shadow: 0 2px 0 var(--primary-shadow);
 }
 
-.app-skill-card {
-  position: relative;
-  overflow: hidden;
-  border-width: 2px;
-}
-
-.app-skill-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  z-index: 1;
-  height: 4px;
-  border-radius: 2px 2px 0 0;
-  background: var(--primary);
-  box-shadow: 0 2px 0 var(--primary-shadow);
-}
-
 @keyframes app-reveal {
   from {
     opacity: 0;
