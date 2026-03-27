@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { LayoutDashboard } from 'lucide-react';
+import { Languages } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeToggle } from '@/components/theme-toggle';
 import '@/app.css';
@@ -26,7 +26,7 @@ export function AuthPortalLayout({
             className="flex min-w-0 items-center gap-2 rounded-xl font-heading text-base font-extrabold tracking-tight text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35"
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--primary-shadow)] bg-primary text-primary-foreground shadow-[0_3px_0_0_var(--primary-shadow)]">
-              <LayoutDashboard className="size-5" strokeWidth={2.5} aria-hidden />
+              <Languages className="size-5" strokeWidth={2.25} aria-hidden />
             </span>
             <span className="truncate">Durchblick</span>
           </Link>

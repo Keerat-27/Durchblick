@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Headphones,
-  LayoutDashboard,
+  Languages,
   LogOut,
   Mic,
   PenLine,
@@ -75,7 +75,7 @@ export function DashboardApp() {
 
       <div className="relative z-10 flex min-h-screen flex-col pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:flex-row md:pb-0">
         <aside
-          className="hidden shrink-0 flex-col overflow-visible border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:w-[17rem] lg:w-[18rem]"
+          className="hidden shrink-0 flex-col overflow-visible border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:min-h-screen md:w-[17rem] lg:w-[18rem]"
           aria-label="Hauptnavigation"
         >
           <div className="border-b-2 border-[var(--duo-border)] px-4 py-5 md:px-5">
@@ -86,9 +86,9 @@ export function DashboardApp() {
               />
               <div className="flex items-start gap-3 p-4">
                 <span className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--primary-shadow)] bg-primary text-primary-foreground shadow-[0_4px_0_0_var(--primary-shadow)]">
-                  <LayoutDashboard
+                  <Languages
                     className="size-7"
-                    strokeWidth={2.75}
+                    strokeWidth={2.5}
                     aria-hidden
                   />
                 </span>
@@ -118,28 +118,34 @@ export function DashboardApp() {
             ))}
           </nav>
 
-          <div className="border-t-2 border-[var(--duo-border)] space-y-3 p-4">
-            {user && (
-              <div className="rounded-2xl border-2 border-[var(--duo-border)] bg-card px-3 py-2.5 shadow-[0_3px_0_0_var(--duo-border)]">
-                <p className="truncate font-sans text-[11px] font-extrabold tracking-wide text-muted-foreground uppercase">
-                  Angemeldet
-                </p>
-                <p className="mt-0.5 truncate font-sans text-sm font-extrabold text-foreground">
-                  {user.email}
-                </p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-2.5 w-full gap-2"
-                  onClick={() => void handleLogout()}
-                >
-                  <LogOut className="size-3.5" aria-hidden />
-                  Abmelden
-                </Button>
-              </div>
-            )}
-            <ThemeToggle placement="sidebar" />
+          <div className="mt-auto">
+            <div className="p-4 pb-3">
+              <ThemeToggle variant="bar" placement="sidebar" />
+            </div>
+            <div className="space-y-3 border-t-2 border-[var(--duo-border)] p-4 pt-3">
+              {user && (
+                <>
+                  <div className="rounded-2xl border-2 border-[var(--duo-border)] bg-card px-3 py-2.5 shadow-[0_3px_0_0_var(--duo-border)]">
+                    <p className="truncate font-sans text-[11px] font-extrabold tracking-wide text-muted-foreground uppercase">
+                      Angemeldet
+                    </p>
+                    <p className="mt-0.5 truncate font-sans text-sm font-extrabold text-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    className="w-full gap-2"
+                    onClick={() => void handleLogout()}
+                  >
+                    <LogOut className="size-4" aria-hidden />
+                    Abmelden
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </aside>
 
