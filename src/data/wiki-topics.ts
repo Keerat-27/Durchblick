@@ -1,9 +1,5 @@
 import type { TopicId } from './topics';
 
-/**
- * Curated Wikipedia page titles per language (grammar-focused articles).
- * EN/DE are fetched independently so each side stays accurate for that wiki.
- */
 export const WIKI_PAGE_TITLES: Record<TopicId, { en: string; de: string }> = {
   'Konjunktiv II': { en: 'German_subjunctive', de: 'Konjunktiv' },
   Relativsätze: { en: 'Relative_clause', de: 'Relativsatz' },

@@ -1,7 +1,6 @@
-import { EXERCISE_BANK } from '../data/exercises';
-import type { TopicId } from '../data/topics';
-import type { Level } from '../data/topics';
-import type { Exercise, ExerciseMultipleChoice } from '../types/exercise';
+import { EXERCISE_BANK } from '@/data/exercises';
+import type { TopicId, Level } from '@/data/topics';
+import type { Exercise, ExerciseMultipleChoice } from '@/types/exercise';
 
 function exerciseKey(ex: Exercise): string {
   if (ex.type === 'error_correction') {
@@ -45,10 +44,6 @@ function shufflePool<T>(items: T[]): T[] {
   return arr;
 }
 
-/**
- * Up to `count` distinct exercises for the topic and level (no duplicates in one set).
- * If fewer exercises exist than `count`, returns all available for that filter.
- */
 export function pickExercises(
   topic: TopicId,
   level: Level,
@@ -57,7 +52,7 @@ export function pickExercises(
   const pool = EXERCISE_BANK[topic];
   if (!pool?.length) return [];
 
-  const filtered = pool.filter((e) => e.levels.includes(level));
+  const filtered = pool.filter((item) => item.levels.includes(level));
   const use = filtered.length ? filtered : pool;
   const shuffled = shufflePool(use);
   const picked: Exercise[] = [];
@@ -82,7 +77,7 @@ export function pickExercise(
   const pool = EXERCISE_BANK[topic];
   if (!pool?.length) return null;
 
-  const filtered = pool.filter((e) => e.levels.includes(level));
+  const filtered = pool.filter((item) => item.levels.includes(level));
   const use = filtered.length ? filtered : pool;
 
   let choice = use[0];

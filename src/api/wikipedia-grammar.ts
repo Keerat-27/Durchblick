@@ -1,12 +1,9 @@
-import type { TopicId } from '../data/topics';
-import { WIKI_PAGE_TITLES } from '../data/wikiTopics';
+import type { TopicId } from '@/data/topics';
+import { WIKI_PAGE_TITLES } from '@/data/wiki-topics';
 
 export type WikipediaSide = {
-  /** Normalized article title */
   title: string;
-  /** Plain-text extract (from Wikipedia; may be truncated) */
   extract: string;
-  /** Canonical article URL */
   url: string;
 };
 
@@ -28,10 +25,6 @@ function wikiArticleUrl(lang: WikiLang, title: string): string {
   return `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(slug)}`;
 }
 
-/**
- * Fetches up to 1200 characters of plain-text extract (MediaWiki API limit).
- * Uses origin=* for browser CORS on Wikimedia wikis.
- */
 async function fetchExtract(
   lang: WikiLang,
   pageTitle: string,
@@ -80,7 +73,6 @@ async function fetchExtract(
   };
 }
 
-/** Load bilingual extracts for a grammar topic from live Wikipedia. */
 export async function fetchWikipediaGrammar(
   topicId: TopicId,
   signal: AbortSignal
