@@ -1,0 +1,240 @@
+.exercise-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.exercise-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.exercise-q-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border: 1px solid rgba(200, 255, 62, 0.35);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-right: 4px;
+}
+
+.exercise-type-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(200, 255, 62, 0.2);
+}
+
+.exercise-topic {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+.exercise-body {
+  padding: 22px 20px;
+}
+
+.exercise-instruction {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.exercise-prompt {
+  font-size: 16px;
+  color: var(--text);
+  line-height: 1.7;
+  margin: 0 0 1.2rem;
+}
+
+.exercise-prompt-muted {
+  color: var(--muted);
+}
+
+.blank-mark {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.exercise-hint {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin: -0.5rem 0 12px;
+}
+
+.fill-input {
+  font-family: var(--font);
+  font-size: 15px;
+  padding: 10px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--border-strong);
+  background: var(--surface2);
+  color: var(--text);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.fill-input:focus {
+  border-color: rgba(200, 255, 62, 0.4);
+}
+
+.fill-input.correct-ans {
+  border-color: rgba(62, 255, 160, 0.5);
+  background: var(--green-dim);
+}
+
+.fill-input.wrong-ans {
+  border-color: rgba(255, 90, 90, 0.5);
+  background: var(--red-dim);
+}
+
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mc-option {
+  font-family: var(--font);
+  font-size: 14px;
+  padding: 11px 16px;
+  border-radius: var(--r);
+  border: 1px solid var(--border-strong);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mc-option:hover:not(:disabled) {
+  border-color: rgba(200, 255, 62, 0.3);
+  background: rgba(200, 255, 62, 0.05);
+}
+
+.mc-option.correct-opt {
+  border-color: rgba(62, 255, 160, 0.5);
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.mc-option.wrong-opt {
+  border-color: rgba(255, 90, 90, 0.5);
+  background: var(--red-dim);
+  color: var(--red);
+}
+
+.mc-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.opt-letter {
+  font-family: var(--mono);
+  font-size: 11px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.submit-btn {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: var(--r);
+  border: 1px solid var(--border-strong);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  border-color: rgba(200, 255, 62, 0.4);
+  color: var(--accent);
+}
+
+.submit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.feedback {
+  margin: 0 20px 20px;
+  padding: 14px 16px;
+  border-radius: var(--r);
+  font-size: 14px;
+  line-height: 1.7;
+  border: 1px solid transparent;
+}
+
+.feedback.correct {
+  background: var(--green-dim);
+  border-color: rgba(62, 255, 160, 0.25);
+  color: var(--text);
+}
+
+.feedback.wrong {
+  background: var(--red-dim);
+  border-color: rgba(255, 90, 90, 0.25);
+  color: var(--text);
+}
+
+.feedback-verdict {
+  font-weight: 500;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.feedback.correct .feedback-verdict {
+  color: var(--green);
+}
+
+.feedback.wrong .feedback-verdict {
+  color: var(--red);
+}
+
+.feedback-explanation {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.fb-ok {
+  color: var(--green);
+}
+
+.fb-bad {
+  color: var(--red);
+}
