@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT"
+
+case "${1:-}" in
+  web)
+    exec npm run dev:full
+    ;;
+  help | --help | -h)
+    cat <<'EOF'
+Usage: ./.trdf <command>
+
+Commands:
+  web    Start the Vite frontend and API backend together
+EOF
+    ;;
+  *)
+    echo "Unknown command: ${1:-}" >&2
+    echo "Run: ./.trdf help" >&2
+    exit 1
+    ;;
+esac
