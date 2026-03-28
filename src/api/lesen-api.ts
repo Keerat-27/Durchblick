@@ -7,10 +7,12 @@ export async function generateLesenRequest(params: {
   category: LesenCategory;
   passageFocus: string | null;
   level: Level;
+  questionCount: number;
 }): Promise<LesenGeneratedSet> {
   const body: Record<string, unknown> = {
     category: params.category,
     level: params.level,
+    questionCount: params.questionCount,
   };
   const focus = params.passageFocus?.trim();
   if (focus) body.passageFocus = focus;

@@ -12,6 +12,16 @@ export const LESEN_CATEGORIES = [
 
 export type LesenCategory = (typeof LESEN_CATEGORIES)[number];
 
+/**
+ * Allowed number of questions per Lesen set (last is always Lückentext).
+ * Keep min/max aligned with `server/src/lesen-schema.ts`.
+ */
+export const LESEN_QUESTION_COUNT = {
+  min: 3,
+  max: 10,
+  default: 4,
+} as const;
+
 export type DailyLesenTheme = {
   /** Short headline shown in UI and sent to the model as the passage angle */
   theme: string;

@@ -3,7 +3,7 @@ import {
   GoogleGenerativeAIFetchError,
 } from '@google/generative-ai';
 import {
-  lesenGenerateResponseSchema,
+  createLesenGenerateResponseSchema,
   type LesenGeneratePayload,
 } from './lesen-schema.js';
 
@@ -17,30 +17,37 @@ function extractJsonObject(raw: string): unknown {
 function buildPrompt(
   category: string,
   passageFocus: string | undefined,
-  level: string
+  level: string,
+  questionCount: number
 ): string {
   const angle =
     passageFocus && passageFocus.trim().length > 0
       ? `Base the passage on this concrete real-world subject (stay factual and specific): «${passageFocus.trim()}».`
       : `Choose one specific, realistic subject within the content category «${category}» (not a vague overview).`;
 
+  const mcCount = questionCount - 1;
+  const mcExample = `{ "type": "multiple_choice", "question": string, "options": [string, string, string, string], "correct_index": 0|1|2|3, "explanation": string }`;
+  const fillExample = `{ "type": "fill_blank", "question": string, "answer": string, "explanation": string }`;
+
+  const questionsShapeLines: string[] = [];
+  for (let i = 0; i < mcCount; i++) {
+    questionsShapeLines.push(`    ${mcExample},`);
+  }
+  questionsShapeLines.push(`    ${fillExample}`);
+  const questionsShape = `[\n${questionsShapeLines.join('\n')}\n  ]`;
+
   return `You are an expert German teacher creating reading comprehension for learners.
 
 Return ONE JSON object only (no markdown), with this exact shape:
 {
   "passage": string,
-  "questions": [
-    { "type": "multiple_choice", "question": string, "options": [string, string, string, string], "correct_index": 0|1|2|3, "explanation": string },
-    { "type": "multiple_choice", ... },
-    { "type": "multiple_choice", ... },
-    { "type": "fill_blank", "question": string, "answer": string, "explanation": string }
-  ]
+  "questions": ${questionsShape}
 }
 
 Rules:
 - "passage": original German, 150–200 words, suited to CEFR level ${level}. Content category for register and vocabulary: ${category}. ${angle}
 - Write like authentic German journalism, travel writing, or explanatory prose (not a textbook). Let rhythm, emphasis, and detail drive how sentences are built; do not name or explain linguistic categories, do not design the text around teaching a single language point, and do not turn the passage into a drill.
-- Exactly 4 questions in order: first 3 are multiple_choice (comprehension of the passage), fourth is fill_blank.
+- Exactly ${questionCount} questions in order: the first ${mcCount} are multiple_choice (comprehension of the passage), the last one is fill_blank.
 - Multiple choice: 4 plausible German options; "correct_index" is 0-based index of the correct option (integer 0–3).
 - Fill blank: "question" is a German sentence with ___ marking the blank; "answer" is the single correct word or short phrase (no punctuation extras); base it on the passage.
 - All student-facing text (passage, questions, options, explanations) must be in German.
@@ -78,7 +85,8 @@ async function generateWithModel(
   modelName: string,
   category: string,
   passageFocus: string | undefined,
-  level: string
+  level: string,
+  questionCount: number
 ): Promise<LesenGeneratePayload> {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
@@ -91,7 +99,7 @@ async function generateWithModel(
   });
 
   const result = await model.generateContent(
-    buildPrompt(category, passageFocus, level)
+    buildPrompt(category, passageFocus, level, questionCount)
   );
   const text = result.response.text();
   if (!text?.trim()) {
@@ -105,7 +113,8 @@ async function generateWithModel(
     throw new Error('INVALID_JSON');
   }
 
-  const checked = lesenGenerateResponseSchema.safeParse(parsed);
+  const schema = createLesenGenerateResponseSchema(questionCount);
+  const checked = schema.safeParse(parsed);
   if (!checked.success) {
     console.warn(
       'Lesen schema mismatch:',
@@ -125,7 +134,8 @@ export async function generateLesenWithGemini(
   apiKey: string,
   category: string,
   passageFocus: string | undefined,
-  level: string
+  level: string,
+  questionCount: number
 ): Promise<LesenGeneratePayload> {
   const candidates = modelCandidates();
   let lastError: unknown;
@@ -138,7 +148,8 @@ export async function generateLesenWithGemini(
         modelName,
         category,
         passageFocus,
-        level
+        level,
+        questionCount
       );
     } catch (e) {
       lastError = e;

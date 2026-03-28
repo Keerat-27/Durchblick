@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, PenLine } from 'lucide-react';
 import { ExerciseCard } from '@/components/exercise-card';
+import { SkillSectionEmptyState } from '@/components/skill-section-empty-state';
 import { GrammarRulesPanel } from '@/components/grammar-rules-panel';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -314,20 +315,33 @@ export function GrammarPracticeView() {
         )}
 
         {!loading && exercises.length === 0 && !error && (
-          <Card className="app-reveal app-reveal-delay-3 border-dashed border-[var(--duo-border-strong)] bg-muted/25 dark:border-border">
-            <CardContent className="flex flex-col items-center gap-4 py-14 text-center">
-              <span className="flex size-16 items-center justify-center rounded-full border-4 border-dashed border-primary/35 bg-[var(--duo-correct-bg)] font-heading text-2xl font-extrabold text-primary">
-                DE
-              </span>
-              <p className="max-w-sm font-heading text-lg font-extrabold text-foreground md:text-xl">
-                Choose topic, level, and size — then generate a set
-              </p>
-              <p className="max-w-md font-sans text-sm font-semibold text-muted-foreground">
-                Several questions appear together. Use “Grammar reference” for
-                Wikipedia extracts when you want them.
-              </p>
-            </CardContent>
-          </Card>
+          <SkillSectionEmptyState
+            tone="schreiben"
+            icon={
+              <PenLine
+                className="size-9 text-primary"
+                strokeWidth={2.25}
+                aria-hidden
+              />
+            }
+            title="Bereit zum Schreiben?"
+            description={
+              <>
+                Wähle{' '}
+                <span className="font-bold text-foreground">Thema</span>,{' '}
+                <span className="font-bold text-foreground">Niveau</span> und{' '}
+                <span className="font-bold text-foreground">Set-Größe</span>,
+                dann{' '}
+                <span className="font-bold text-foreground">Generate set</span>
+                . Mehrere Aufgaben erscheinen nacheinander. Über{' '}
+                <span className="font-bold text-foreground">
+                  Grammar reference
+                </span>{' '}
+                kannst du bei Bedarf Wikipedia-Auszüge zum Grammatik-Thema
+                öffnen.
+              </>
+            }
+          />
         )}
       </div>
 

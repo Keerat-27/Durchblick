@@ -8,6 +8,10 @@ import { z } from 'zod';
 import { verifyAccessToken } from './jwt-tokens.js';
 import { findUserById } from './users-store.js';
 import { generateLesenWithGemini } from './lesen-gemini.js';
+import {
+  LESEN_QUESTION_COUNT_MAX,
+  LESEN_QUESTION_COUNT_MIN,
+} from './lesen-schema.js';
 
 const LESEN_CATEGORY_VALUES = [
   'Kultur',
@@ -24,6 +28,12 @@ const generateBodySchema = z.object({
   category: z.enum(LESEN_CATEGORY_VALUES),
   passageFocus: z.string().trim().min(1).max(200).optional(),
   level: z.enum(['A1', 'A2', 'B1', 'B2']),
+  questionCount: z
+    .number()
+    .int()
+    .min(LESEN_QUESTION_COUNT_MIN)
+    .max(LESEN_QUESTION_COUNT_MAX)
+    .optional(),
 });
 
 export function createLesenRouter(accessSecret: string): Router {
@@ -59,7 +69,8 @@ export function createLesenRouter(accessSecret: string): Router {
       return;
     }
 
-    const { category, passageFocus, level } = parsed.data;
+    const { category, passageFocus, level, questionCount } = parsed.data;
+    const nQuestions = questionCount ?? 4;
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
       res.status(503).json({
@@ -74,7 +85,8 @@ export function createLesenRouter(accessSecret: string): Router {
         apiKey,
         category,
         passageFocus,
-        level
+        level,
+        nQuestions
       );
       res.json(payload);
     } catch (e) {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Headphones,
+  House,
   Languages,
   LogOut,
   Mic,
@@ -11,10 +12,19 @@ import {
 } from 'lucide-react';
 import '@/app.css';
 import { ThemeToggle } from '@/components/theme-toggle';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { duoPressParent, duoPressShadowChild } from '@/lib/duo-press';
 import { cn } from '@/lib/utils';
+import { SkillSectionEmptyState } from '@/components/skill-section-empty-state';
 import { GrammarPracticeView } from '@/views/grammar-practice-view';
+import { HomeView } from '@/views/home-view';
 import { ReadingPracticeView } from '@/views/reading-practice-view';
 import { ProfileView } from '@/views/profile-view';
 import { useAuth } from '@/contexts/auth-context';
@@ -25,7 +35,15 @@ export type SkillSectionId =
   | 'hoeren'
   | 'sprechen';
 
-export type DashboardSectionId = SkillSectionId | 'profil';
+export type DashboardSectionId = 'home' | SkillSectionId | 'profil';
+
+const HOME_NAV = {
+  id: 'home' as const,
+  label: 'Start',
+  subtitle: 'Home',
+  icon: House,
+  duoIconTint: 'text-[var(--chart-2)]',
+};
 
 const SKILLS: {
   id: SkillSectionId;
@@ -64,6 +82,8 @@ const SKILLS: {
   },
 ];
 
+const SIDEBAR_NAV = [HOME_NAV, ...SKILLS] as const;
+
 const PROFILE_SECTION = {
   id: 'profil' as const,
   label: 'Profil',
@@ -77,12 +97,13 @@ const DASHBOARD_MD_HEADER_ROW =
   'md:flex md:min-h-[5.25rem] md:items-center md:py-0';
 
 function sectionMeta(active: DashboardSectionId) {
+  if (active === 'home') return HOME_NAV;
   if (active === 'profil') return PROFILE_SECTION;
   return SKILLS.find((s) => s.id === active)!;
 }
 
 export function DashboardApp() {
-  const [active, setActive] = useState<DashboardSectionId>('lesen');
+  const [active, setActive] = useState<DashboardSectionId>('home');
   const current = sectionMeta(active);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -130,39 +151,29 @@ export function DashboardApp() {
             className="flex flex-1 flex-col gap-1.5 px-3 py-4"
             aria-label="Fertigkeiten"
           >
-            {SKILLS.map((skill) => (
+            {SIDEBAR_NAV.map((item) => (
               <NavItem
-                key={skill.id}
-                skill={skill}
-                isActive={active === skill.id}
-                onSelect={() => setActive(skill.id)}
+                key={item.id}
+                item={item}
+                isActive={active === item.id}
+                onSelect={() => setActive(item.id)}
               />
             ))}
           </nav>
 
           <div className="mt-auto">
-            <div className="space-y-3 border-t-2 border-[var(--duo-border)] p-4 pt-3">
+            <div className="border-t-2 border-[var(--duo-border)] p-4 pt-3">
               {user && (
-                <>
-                  <div className="rounded-2xl border-2 border-[var(--duo-border)] bg-card px-3 py-2.5 shadow-[0_3px_0_0_var(--duo-border)]">
-                    <p className="truncate font-sans text-[11px] font-extrabold tracking-wide text-muted-foreground uppercase">
-                      Angemeldet
-                    </p>
-                    <p className="mt-0.5 truncate font-sans text-sm font-extrabold text-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    className="w-full gap-2"
-                    onClick={() => void handleLogout()}
-                  >
-                    <LogOut className="size-4" aria-hidden />
-                    Abmelden
-                  </Button>
-                </>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="w-full gap-2"
+                  onClick={() => void handleLogout()}
+                >
+                  <LogOut className="size-4" aria-hidden />
+                  Abmelden
+                </Button>
               )}
             </div>
           </div>
@@ -188,21 +199,53 @@ export function DashboardApp() {
             </div>
             <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
               <ThemeToggle placement="header" />
-              <button
-                type="button"
-                className={cn(
-                  'inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 bg-card font-sans hover:brightness-[1.02] focus-visible:border-[var(--chart-2)] focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35',
-                  duoPressParent,
-                  active === 'profil'
-                    ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-[0_4px_0_0_var(--duo-nav-active-border)] hover:bg-[var(--duo-nav-active)]'
-                    : 'border-[var(--duo-border-strong)] text-muted-foreground shadow-[0_4px_0_0_var(--duo-border-strong)] hover:bg-muted dark:border-input dark:bg-input/30 dark:text-foreground dark:shadow-[0_4px_0_0_var(--border)] dark:hover:bg-input/50'
-                )}
-                aria-label="Profil öffnen"
-                aria-pressed={active === 'profil'}
-                onClick={() => setActive('profil')}
-              >
-                <UserRound className="size-4" strokeWidth={2.25} aria-hidden />
-              </button>
+              {user && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    type="button"
+                    className={cn(
+                      'inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border-2 bg-card font-sans hover:brightness-[1.02] focus-visible:border-[var(--chart-2)] focus-visible:ring-[3px] focus-visible:ring-[var(--chart-2)]/35',
+                      duoPressParent,
+                      active === 'profil'
+                        ? 'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-[0_4px_0_0_var(--duo-nav-active-border)] data-popup-open:border-[var(--duo-nav-active-border)] data-popup-open:bg-[var(--duo-nav-active)] data-popup-open:shadow-[0_4px_0_0_var(--duo-nav-active-border)] hover:bg-[var(--duo-nav-active)] data-popup-open:hover:bg-[var(--duo-nav-active)]'
+                        : 'border-[var(--duo-border-strong)] text-muted-foreground shadow-[0_4px_0_0_var(--duo-border-strong)] data-popup-open:bg-muted hover:bg-muted dark:border-input dark:bg-input/30 dark:text-foreground dark:shadow-[0_4px_0_0_var(--border)] dark:hover:bg-input/50 dark:data-popup-open:bg-input/50'
+                    )}
+                    aria-label="Konto und Profil"
+                  >
+                    <UserRound className="size-4" strokeWidth={2.25} aria-hidden />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    sideOffset={8}
+                    className="w-64 min-w-[15.5rem] max-w-[calc(100vw-2rem)] p-2"
+                  >
+                    <div className="rounded-xl border border-border bg-muted/50 px-3 py-2.5">
+                      <p className="font-sans text-[11px] font-extrabold tracking-wide text-muted-foreground uppercase">
+                        Angemeldet
+                      </p>
+                      <p className="mt-1 break-all font-sans text-sm font-extrabold text-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                    <DropdownMenuSeparator className="my-2" />
+                    <DropdownMenuItem
+                      className="gap-2 font-sans font-bold"
+                      onClick={() => setActive('profil')}
+                    >
+                      <UserRound className="size-4" aria-hidden />
+                      View profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      variant="destructive"
+                      className="gap-2 font-sans font-bold"
+                      onClick={() => void handleLogout()}
+                    >
+                      <LogOut className="size-4" aria-hidden />
+                      Abmelden
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </header>
 
@@ -215,6 +258,11 @@ export function DashboardApp() {
               {current.label}
             </h1>
             <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-4xl md:px-8 md:py-10 lg:max-w-5xl">
+            {active === 'home' && (
+              <div className="animate-in fade-in duration-200">
+                <HomeView />
+              </div>
+            )}
             {active === 'lesen' && (
               <div className="animate-in fade-in duration-200">
                 <ReadingPracticeView />
@@ -223,6 +271,52 @@ export function DashboardApp() {
             {active === 'schreiben' && (
               <div className="animate-in fade-in duration-200">
                 <GrammarPracticeView />
+              </div>
+            )}
+            {active === 'hoeren' && (
+              <div className="animate-in fade-in duration-200">
+                <SkillSectionEmptyState
+                  tone="hoeren"
+                  icon={
+                    <Headphones
+                      className="size-9 text-[var(--chart-4)]"
+                      strokeWidth={2.25}
+                      aria-hidden
+                    />
+                  }
+                  title="Bereit zum Hören?"
+                  description={
+                    <>
+                      Dieser Bereich ist noch in Arbeit. Bald findest du hier
+                      Audio-Texte und Verständnisfragen — ähnlich wie bei{' '}
+                      <span className="font-bold text-foreground">Lesen</span>,
+                      nur mit Ton.
+                    </>
+                  }
+                />
+              </div>
+            )}
+            {active === 'sprechen' && (
+              <div className="animate-in fade-in duration-200">
+                <SkillSectionEmptyState
+                  tone="sprechen"
+                  icon={
+                    <Mic
+                      className="size-9 text-[var(--chart-3)]"
+                      strokeWidth={2.25}
+                      aria-hidden
+                    />
+                  }
+                  title="Bereit zum Sprechen?"
+                  description={
+                    <>
+                      Dieser Bereich ist noch in Arbeit. Geplant sind Übungen zu
+                      Aussprache und freiem Sprechen — mit klarem{' '}
+                      <span className="font-bold text-foreground">Feedback</span>{' '}
+                      zu deinen Antworten.
+                    </>
+                  }
+                />
               </div>
             )}
             {active === 'profil' && (
@@ -238,14 +332,14 @@ export function DashboardApp() {
           className="duo-mobile-tabbar fixed inset-x-0 bottom-0 z-40 flex border-t-2 border-[var(--duo-border)] bg-card md:hidden"
           aria-label="Fertigkeiten"
         >
-          {SKILLS.map((skill) => {
-            const Icon = skill.icon;
-            const isOn = active === skill.id;
+          {SIDEBAR_NAV.map((item) => {
+            const Icon = item.icon;
+            const isOn = active === item.id;
             return (
               <button
-                key={skill.id}
+                key={item.id}
                 type="button"
-                onClick={() => setActive(skill.id)}
+                onClick={() => setActive(item.id)}
                 className={cn(
                   'flex min-h-[3.5rem] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 font-sans text-[10px] font-extrabold transition-colors',
                   duoPressParent,
@@ -267,12 +361,12 @@ export function DashboardApp() {
                   <Icon
                     className={cn(
                       'size-6',
-                      isOn ? 'text-[var(--chart-2)]' : skill.duoIconTint
+                      isOn ? 'text-[var(--chart-2)]' : item.duoIconTint
                     )}
                     strokeWidth={2.25}
                   />
                 </span>
-                <span className="max-w-full truncate">{skill.label}</span>
+                <span className="max-w-full truncate">{item.label}</span>
               </button>
             );
           })}
@@ -283,15 +377,15 @@ export function DashboardApp() {
 }
 
 function NavItem({
-  skill,
+  item,
   isActive,
   onSelect,
 }: {
-  skill: (typeof SKILLS)[number];
+  item: (typeof SIDEBAR_NAV)[number];
   isActive: boolean;
   onSelect: () => void;
 }) {
-  const Icon = skill.icon;
+  const Icon = item.icon;
   return (
     <button
       type="button"
@@ -316,7 +410,7 @@ function NavItem({
       >
         <Icon className="size-[22px]" strokeWidth={2.25} />
       </span>
-      <span className="min-w-0 flex-1 truncate">{skill.label}</span>
+      <span className="min-w-0 flex-1 truncate">{item.label}</span>
       {isActive && (
         <span
           className="size-2 shrink-0 rounded-full bg-primary"
