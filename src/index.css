@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap');
 
 @import 'tailwindcss';
@@ -80,6 +81,7 @@
   --app-aurora-2: rgb(88 204 2 / 0.06);
   --app-aurora-3: rgb(255 200 0 / 0.06);
   --app-vignette: rgb(0 0 0 / 0.02);
+  --font-stats-display: 'Fraunces', Georgia, 'Times New Roman', serif;
 
   color-scheme: light;
 }
@@ -212,6 +214,12 @@ html {
 
 .font-heading {
   font-family: var(--font-heading), system-ui, sans-serif;
+}
+
+/** Editorial display for stats dashboards — pairs with Nunito body (see frontend-design-skills). */
+.font-stats-display {
+  font-family: var(--font-stats-display);
+  font-optical-sizing: auto;
 }
 
 .app-wordmark {
