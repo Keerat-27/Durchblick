@@ -92,10 +92,12 @@ function LesenMcBlock({
         </p>
         <div className="flex flex-col gap-3">
           {question.options.map((opt, i) => {
-            let state: 'neutral' | 'correct' | 'wrong' = 'neutral';
+            let state: 'neutral' | 'selected' | 'correct' | 'wrong' = 'neutral';
             if (submitted) {
               if (i === correctIdx) state = 'correct';
               else if (i === selected && !wasCorrect) state = 'wrong';
+            } else if (selected === i) {
+              state = 'selected';
             }
             return (
               <Button
@@ -103,11 +105,14 @@ function LesenMcBlock({
                 type="button"
                 variant="outline"
                 disabled={submitted}
+                aria-pressed={!submitted && selected === i}
                 className={cn(
                   'h-auto min-h-[3.25rem] justify-start gap-3 rounded-2xl py-3 pr-4 pl-3 text-left font-sans text-[15px] font-bold whitespace-normal',
                   state === 'neutral' &&
                     !submitted &&
                     'active:translate-y-1 hover:border-[var(--chart-2)]/50 hover:bg-[var(--duo-nav-active)]',
+                  state === 'selected' &&
+                    'border-[var(--duo-nav-active-border)] bg-[var(--duo-nav-active)] text-foreground shadow-none ring-2 ring-[var(--chart-2)]/25 hover:border-[var(--duo-nav-active-border)] hover:bg-[var(--duo-nav-active)]',
                   state === 'correct' &&
                     'border-[var(--duo-correct-border)] bg-[var(--duo-correct-bg)] text-[var(--ok)] shadow-none hover:bg-[var(--duo-correct-bg)]',
                   state === 'wrong' &&
@@ -118,6 +123,8 @@ function LesenMcBlock({
                 <span
                   className={cn(
                     'flex size-9 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--duo-border)] font-sans text-xs font-extrabold text-muted-foreground dark:border-border',
+                    state === 'selected' &&
+                      'border-[var(--chart-2)] bg-card text-[var(--chart-2)]',
                     state === 'correct' &&
                       'border-[var(--duo-correct-border)] bg-card text-[var(--ok)]',
                     state === 'wrong' &&
