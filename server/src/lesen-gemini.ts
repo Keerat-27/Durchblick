@@ -14,7 +14,16 @@ function extractJsonObject(raw: string): unknown {
   return JSON.parse(body) as unknown;
 }
 
-function buildPrompt(topicLabel: string, level: string): string {
+function buildPrompt(
+  category: string,
+  passageFocus: string | undefined,
+  level: string
+): string {
+  const angle =
+    passageFocus && passageFocus.trim().length > 0
+      ? `Base the passage on this concrete real-world subject (stay factual and specific): «${passageFocus.trim()}».`
+      : `Choose one specific, realistic subject within the content category «${category}» (not a vague overview).`;
+
   return `You are an expert German teacher creating reading comprehension for learners.
 
 Return ONE JSON object only (no markdown), with this exact shape:
@@ -29,15 +38,15 @@ Return ONE JSON object only (no markdown), with this exact shape:
 }
 
 Rules:
-- "passage": original German text, 150–200 words, difficulty suited to CEFR level ${level}. The topic should naturally touch on or relate to the grammar area "${topicLabel}" without being a grammar drill (authentic reading).
+- "passage": original German, 150–200 words, suited to CEFR level ${level}. Content category for register and vocabulary: ${category}. ${angle}
+- Write like authentic German journalism, travel writing, or explanatory prose (not a textbook). Let rhythm, emphasis, and detail drive how sentences are built; do not name or explain linguistic categories, do not design the text around teaching a single language point, and do not turn the passage into a drill.
 - Exactly 4 questions in order: first 3 are multiple_choice (comprehension of the passage), fourth is fill_blank.
 - Multiple choice: 4 plausible German options; "correct_index" is 0-based index of the correct option (integer 0–3).
 - Fill blank: "question" is a German sentence with ___ marking the blank; "answer" is the single correct word or short phrase (no punctuation extras); base it on the passage.
 - All student-facing text (passage, questions, options, explanations) must be in German.
 - Explanations: brief (1–2 sentences), why the answer is right/wrong.
 
-CEFR level: ${level}
-Grammar theme (loose): ${topicLabel}`;
+CEFR level: ${level}`;
 }
 
 function modelCandidates(): string[] {
@@ -67,7 +76,8 @@ function shouldTryFallbackModel(e: unknown): boolean {
 async function generateWithModel(
   apiKey: string,
   modelName: string,
-  topicLabel: string,
+  category: string,
+  passageFocus: string | undefined,
   level: string
 ): Promise<LesenGeneratePayload> {
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -80,7 +90,9 @@ async function generateWithModel(
     },
   });
 
-  const result = await model.generateContent(buildPrompt(topicLabel, level));
+  const result = await model.generateContent(
+    buildPrompt(category, passageFocus, level)
+  );
   const text = result.response.text();
   if (!text?.trim()) {
     throw new Error('EMPTY_MODEL_RESPONSE');
@@ -111,7 +123,8 @@ async function generateWithModel(
 
 export async function generateLesenWithGemini(
   apiKey: string,
-  topicLabel: string,
+  category: string,
+  passageFocus: string | undefined,
   level: string
 ): Promise<LesenGeneratePayload> {
   const candidates = modelCandidates();
@@ -120,7 +133,13 @@ export async function generateLesenWithGemini(
   for (let i = 0; i < candidates.length; i++) {
     const modelName = candidates[i]!;
     try {
-      return await generateWithModel(apiKey, modelName, topicLabel, level);
+      return await generateWithModel(
+        apiKey,
+        modelName,
+        category,
+        passageFocus,
+        level
+      );
     } catch (e) {
       lastError = e;
       if (shouldTryFallbackModel(e) && i < candidates.length - 1) {

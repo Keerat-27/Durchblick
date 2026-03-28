@@ -21,6 +21,11 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import {
+  getDailyLesenTheme,
+  LESEN_CATEGORIES,
+  type LesenCategory,
+} from '@/data/lesen-content';
 import { TOPICS, type Level, type TopicId } from '@/data/topics';
 import type {
   LesenFillBlankQuestion,
@@ -273,9 +278,16 @@ function LesenFillBlock({
   );
 }
 
-/** Reading comprehension (Lesen) — topic, level, AI passage + four questions, batch submit. */
+/** Reading comprehension (Lesen) — content category, optional focus, level, AI passage + four questions. */
 export function ReadingPracticeView() {
-  const [topic, setTopic] = useState<TopicId>('Konjunktiv II');
+  const [category, setCategory] = useState<LesenCategory>(
+    () => getDailyLesenTheme().category
+  );
+  const [passageFocus, setPassageFocus] = useState<string | null>(() =>
+    getDailyLesenTheme().theme
+  );
+  const [referenceGrammarTopic, setReferenceGrammarTopic] =
+    useState<TopicId>('Konjunktiv II');
   const [level, setLevel] = useState<Level>('B1');
   const [data, setData] = useState<LesenGeneratedSet | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -291,7 +303,17 @@ export function ReadingPracticeView() {
 
   const { recordAttempt, recordNewSet } = useLearningProgress();
 
-  const topicLabel = TOPICS.find((t) => t.id === topic)?.label ?? topic;
+  const contentLabel = passageFocus?.trim()
+    ? `${category} · ${passageFocus.trim()}`
+    : category;
+
+  const dailyTheme = getDailyLesenTheme();
+  const todayFormatted = new Date().toLocaleDateString('de-DE', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const clearRound = useCallback(() => {
     setData(null);
@@ -301,8 +323,16 @@ export function ReadingPracticeView() {
     setSubmitted(false);
   }, []);
 
-  function onTopicChange(next: TopicId) {
-    setTopic(next);
+  function onCategoryChange(next: LesenCategory) {
+    setCategory(next);
+    setPassageFocus(null);
+    clearRound();
+  }
+
+  function applyDailyTheme() {
+    const t = getDailyLesenTheme();
+    setCategory(t.category);
+    setPassageFocus(t.theme);
     clearRound();
   }
 
@@ -314,7 +344,11 @@ export function ReadingPracticeView() {
     setMcAnswers([null, null, null]);
     setFillAnswer('');
     try {
-      const payload = await generateLesenRequest(topicLabel, level);
+      const payload = await generateLesenRequest({
+        category,
+        passageFocus,
+        level,
+      });
       if (!payload.questions || payload.questions.length !== 4) {
         setError('Invalid response from server. Try again.');
         return;
@@ -397,39 +431,79 @@ export function ReadingPracticeView() {
   return (
     <>
       <section
-        className="app-reveal app-reveal-delay-1 mb-8"
-        aria-labelledby="lesen-topic-heading"
+        className="app-reveal app-reveal-delay-1 mb-8 space-y-6"
+        aria-labelledby="lesen-thema-heading"
       >
-        <h2
-          id="lesen-topic-heading"
-          className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase"
-        >
-          Topic
-        </h2>
-        <div
-          className="mt-3 flex flex-wrap gap-2.5"
-          role="tablist"
-          aria-label="Grammar topics"
-        >
-          {TOPICS.map((t) => (
-            <Button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={topic === t.id}
-              size="sm"
-              variant={topic === t.id ? 'default' : 'outline'}
-              className={cn(
-                'rounded-full border-2 px-4 font-sans text-[13px] font-extrabold transition-transform duration-100',
-                topic === t.id
-                  ? 'shadow-[0_4px_0_0_var(--primary-shadow)] hover:-translate-y-px'
-                  : 'border-[var(--duo-border-strong)] shadow-[0_4px_0_0_var(--duo-border-strong)] hover:-translate-y-px hover:bg-muted dark:border-input dark:shadow-[0_4px_0_0_var(--border)]'
-              )}
-              onClick={() => onTopicChange(t.id)}
+        <Card className="overflow-hidden border-2 border-[var(--chart-2)]/35 bg-gradient-to-br from-[var(--chart-2)]/12 via-card to-card shadow-[0_4px_0_0_var(--duo-border)] dark:border-border dark:from-[var(--chart-2)]/20 dark:shadow-[0_4px_0_0_var(--border)]">
+          <CardHeader className="space-y-1 border-b border-[var(--chart-2)]/20 pb-4">
+            <p
+              id="lesen-thema-heading"
+              className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase"
             >
-              {t.label}
+              Thema des Tages
+            </p>
+            <p className="font-sans text-xs font-bold text-muted-foreground capitalize">
+              {todayFormatted}
+            </p>
+            <p className="pt-2 font-heading text-xl font-extrabold leading-snug text-foreground md:text-2xl">
+              {dailyTheme.theme}
+            </p>
+            <Badge
+              variant="secondary"
+              className="mt-2 w-fit border-2 border-[var(--duo-border)] font-sans text-[10px] font-extrabold tracking-wider uppercase dark:border-border"
+            >
+              {dailyTheme.category}
+            </Badge>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-xl font-sans text-sm font-semibold text-muted-foreground">
+              Übernimmt Kategorie und konkreten Schwerpunkt für den nächsten Text.
+              Du kannst danach die Kategorie-Chips wie gewohnt anpassen.
+            </p>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              className="shrink-0 rounded-full font-sans text-[11px] font-extrabold tracking-[0.08em] uppercase"
+              onClick={applyDailyTheme}
+            >
+              Heutiges Thema übernehmen
             </Button>
-          ))}
+          </CardContent>
+        </Card>
+
+        <div>
+          <h2
+            id="lesen-category-heading"
+            className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase"
+          >
+            Kategorie
+          </h2>
+          <div
+            className="mt-3 flex flex-wrap gap-2.5"
+            role="tablist"
+            aria-label="Inhaltskategorien"
+          >
+            {LESEN_CATEGORIES.map((c) => (
+              <Button
+                key={c}
+                type="button"
+                role="tab"
+                aria-selected={category === c}
+                size="sm"
+                variant={category === c ? 'default' : 'outline'}
+                className={cn(
+                  'rounded-full border-2 px-4 font-sans text-[13px] font-extrabold transition-transform duration-100',
+                  category === c
+                    ? 'shadow-[0_4px_0_0_var(--primary-shadow)] hover:-translate-y-px'
+                    : 'border-[var(--duo-border-strong)] shadow-[0_4px_0_0_var(--duo-border-strong)] hover:-translate-y-px hover:bg-muted dark:border-input dark:shadow-[0_4px_0_0_var(--border)]'
+                )}
+                onClick={() => onCategoryChange(c)}
+              >
+                {c}
+              </Button>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -572,7 +646,7 @@ export function ReadingPracticeView() {
                   Reading passage
                 </p>
                 <p className="mt-1 font-heading text-xl font-extrabold text-foreground md:text-2xl">
-                  {topicLabel} · {level}
+                  {contentLabel} · {level}
                 </p>
               </CardHeader>
               <CardContent className="pt-6">
@@ -594,7 +668,7 @@ export function ReadingPracticeView() {
                 <LesenMcBlock
                   question={data.questions[0]}
                   questionNumber={1}
-                  topicLabel={topicLabel}
+                  topicLabel={contentLabel}
                   selected={mcAnswers[0]}
                   onSelect={(i) =>
                     setMcAnswers((prev) => [i, prev[1], prev[2]])
@@ -612,7 +686,7 @@ export function ReadingPracticeView() {
                 <LesenMcBlock
                   question={data.questions[1]}
                   questionNumber={2}
-                  topicLabel={topicLabel}
+                  topicLabel={contentLabel}
                   selected={mcAnswers[1]}
                   onSelect={(i) =>
                     setMcAnswers((prev) => [prev[0], i, prev[2]])
@@ -630,7 +704,7 @@ export function ReadingPracticeView() {
                 <LesenMcBlock
                   question={data.questions[2]}
                   questionNumber={3}
-                  topicLabel={topicLabel}
+                  topicLabel={contentLabel}
                   selected={mcAnswers[2]}
                   onSelect={(i) =>
                     setMcAnswers((prev) => [prev[0], prev[1], i])
@@ -648,7 +722,7 @@ export function ReadingPracticeView() {
                 <LesenFillBlock
                   question={data.questions[3]}
                   questionNumber={4}
-                  topicLabel={topicLabel}
+                  topicLabel={contentLabel}
                   value={fillAnswer}
                   onChange={setFillAnswer}
                   submitted={submitted}
@@ -717,12 +791,12 @@ export function ReadingPracticeView() {
                 DE
               </span>
               <p className="max-w-sm font-heading text-lg font-extrabold text-foreground md:text-xl">
-                Choose topic and level — then generate a reading set
+                Wähle Kategorie und Niveau — dann erzeuge einen Lesetext
               </p>
               <p className="max-w-md font-sans text-sm font-semibold text-muted-foreground">
-                You will get one passage (about 150–200 words) and four
-                comprehension questions. Use “Grammar reference” for Wikipedia
-                extracts when you want them.
+                Du erhältst einen Text (etwa 150–200 Wörter) und vier
+                Verständnisfragen. „Grammar reference“ öffnet Wikipedia-Hilfen
+                zu Grammatik — dort Thema separat wählen.
               </p>
             </CardContent>
           </Card>
@@ -736,17 +810,46 @@ export function ReadingPracticeView() {
           showCloseButton
           className="w-full gap-0 border-[var(--duo-border)] bg-card p-0 sm:max-w-md dark:border-border"
         >
-          <SheetHeader className="border-b-2 border-[var(--duo-border)] px-5 py-4 text-left dark:border-border">
+          <SheetHeader className="space-y-4 border-b-2 border-[var(--duo-border)] px-5 py-4 text-left dark:border-border">
             <SheetTitle className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-muted-foreground uppercase">
               Grammar reference
             </SheetTitle>
+            <div className="space-y-2">
+              <label
+                htmlFor="lesen-ref-grammar-topic"
+                className="font-sans text-[10px] font-extrabold tracking-[0.12em] text-muted-foreground uppercase"
+              >
+                Grammatik-Thema
+              </label>
+              <Select
+                value={referenceGrammarTopic}
+                onValueChange={(v) => setReferenceGrammarTopic(v as TopicId)}
+              >
+                <SelectTrigger
+                  id="lesen-ref-grammar-topic"
+                  className="w-full font-sans font-bold"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TOPICS.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </SheetHeader>
           <div className="px-4 pb-10 pt-4">
             {referenceOpen && (
               <GrammarRulesPanel
-                key={topic}
-                topicId={topic}
-                topicLabel={topicLabel}
+                key={referenceGrammarTopic}
+                topicId={referenceGrammarTopic}
+                topicLabel={
+                  TOPICS.find((t) => t.id === referenceGrammarTopic)?.label ??
+                  referenceGrammarTopic
+                }
               />
             )}
           </div>

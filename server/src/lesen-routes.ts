@@ -9,8 +9,20 @@ import { verifyAccessToken } from './jwt-tokens.js';
 import { findUserById } from './users-store.js';
 import { generateLesenWithGemini } from './lesen-gemini.js';
 
+const LESEN_CATEGORY_VALUES = [
+  'Kultur',
+  'Technologie',
+  'Sport',
+  'Reisen',
+  'Alltag',
+  'Politik',
+  'Natur',
+  'Geschichte',
+] as const;
+
 const generateBodySchema = z.object({
-  topic: z.string().trim().min(1),
+  category: z.enum(LESEN_CATEGORY_VALUES),
+  passageFocus: z.string().trim().min(1).max(200).optional(),
   level: z.enum(['A1', 'A2', 'B1', 'B2']),
 });
 
@@ -47,7 +59,7 @@ export function createLesenRouter(accessSecret: string): Router {
       return;
     }
 
-    const { topic, level } = parsed.data;
+    const { category, passageFocus, level } = parsed.data;
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
       res.status(503).json({
@@ -58,7 +70,12 @@ export function createLesenRouter(accessSecret: string): Router {
     }
 
     try {
-      const payload = await generateLesenWithGemini(apiKey, topic, level);
+      const payload = await generateLesenWithGemini(
+        apiKey,
+        category,
+        passageFocus,
+        level
+      );
       res.json(payload);
     } catch (e) {
       const code = e instanceof Error ? e.message : String(e);
@@ -78,7 +95,7 @@ export function createLesenRouter(accessSecret: string): Router {
         console.error('Lesen Gemini response error:', e.message, e.response);
         res.status(502).json({
           error:
-            'The model blocked or could not finish this reading task (safety or empty response). Try again or pick another topic.',
+            'The model blocked or could not finish this reading task (safety or empty response). Try again or choose another category.',
         });
         return;
       }
