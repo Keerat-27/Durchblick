@@ -257,7 +257,7 @@ function profileStatRows(stats: LearningStats): ProfileStatDef[] {
       accentClass: 'text-[var(--chart-4)]',
       theme: STAT_THEMES.trend,
       value: (s) => String(s.totalAnswered),
-      hint: () => 'Grammatikfragen insgesamt',
+      hint: () => 'Lese- und Grammatikfragen insgesamt',
     },
     {
       label: 'Sätze generiert',
@@ -265,7 +265,7 @@ function profileStatRows(stats: LearningStats): ProfileStatDef[] {
       accentClass: 'text-[var(--chart-5)]',
       theme: STAT_THEMES.layers,
       value: (s) => String(s.setsGenerated),
-      hint: () => 'Übungssätze unter Schreiben gestartet',
+      hint: () => 'Lesen- oder Schreib-Sets gestartet',
     },
   ];
 }
@@ -318,7 +318,8 @@ export function ProfileView() {
                 </p>
               ) : (
                 <p className="font-sans text-xs font-bold text-muted-foreground">
-                  Übe unter Schreiben — dann erscheinen deine Statistiken hier.
+                  Übe unter Lesen oder Schreiben — dann erscheinen deine
+                  Statistiken hier.
                 </p>
               )}
             </div>
@@ -338,8 +339,8 @@ export function ProfileView() {
             Statistiken
           </h2>
           <p className="max-w-md font-sans text-sm font-semibold leading-snug text-muted-foreground">
-            Live aus Schreiben und Grammatik — Zahlen zählen hoch, sobald du diesen
-            Bereich öffnest.
+            Live aus Lesen, Schreiben und Grammatik — Zahlen zählen hoch, sobald
+            du diesen Bereich öffnest.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:auto-rows-fr sm:grid-cols-2 sm:gap-4 lg:grid-cols-2 lg:gap-4 xl:grid-cols-3 xl:gap-x-5 xl:gap-y-4">

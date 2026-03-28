@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { duoPressParent, duoPressShadowChild } from '@/lib/duo-press';
 import { cn } from '@/lib/utils';
 import { GrammarPracticeView } from '@/views/grammar-practice-view';
+import { ReadingPracticeView } from '@/views/reading-practice-view';
 import { ProfileView } from '@/views/profile-view';
 import { useAuth } from '@/contexts/auth-context';
 
@@ -95,9 +96,14 @@ export function DashboardApp() {
     <>
       <div className="app-canvas" aria-hidden />
 
-      <div className="relative z-10 flex min-h-screen flex-col pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:flex-row md:pb-0">
+      <div
+        className={cn(
+          'relative z-10 flex min-h-screen flex-col pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]',
+          'md:h-dvh md:max-h-dvh md:min-h-0 md:flex-row md:overflow-hidden md:pb-0'
+        )}
+      >
         <aside
-          className="hidden shrink-0 flex-col overflow-visible border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:min-h-screen md:w-[17rem] lg:w-[18rem]"
+          className="hidden h-full min-h-0 shrink-0 flex-col overflow-hidden border-e-2 border-[var(--duo-border)] bg-sidebar md:flex md:w-[17rem] lg:w-[18rem]"
           aria-label="Hauptnavigation"
         >
           <div
@@ -162,7 +168,7 @@ export function DashboardApp() {
           </div>
         </aside>
 
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <header
             className={cn(
               'sticky top-0 z-30 flex shrink-0 items-center justify-between gap-3 border-b-2 border-[var(--duo-border)] bg-card/95 px-4 py-3 backdrop-blur-md supports-[backdrop-filter]:bg-card/80 md:px-6',
@@ -205,58 +211,27 @@ export function DashboardApp() {
             className="min-h-0 flex-1 overflow-y-auto"
             aria-labelledby="dashboard-section-title"
           >
-          <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-4xl md:px-8 md:py-10 lg:max-w-5xl">
-            <header className="app-reveal app-main-surface relative mb-8 overflow-hidden rounded-2xl border-2 border-[var(--duo-border)] bg-card p-6 shadow-[0_4px_0_0_var(--duo-border)] md:mb-10 md:p-9">
-              <div className="relative flex flex-col gap-5">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-                  <div className="min-w-0 space-y-2">
-                    <p className="font-sans text-[11px] font-extrabold tracking-[0.14em] text-[var(--chart-2)] uppercase">
-                      {current.subtitle}
-                    </p>
-                    <div className="app-title-rule" aria-hidden />
-                    <h1
-                      id="dashboard-section-title"
-                      className="app-section-title font-heading text-[1.85rem] leading-[1.1] md:text-[2.25rem]"
-                    >
-                      {current.label}
-                    </h1>
-                  </div>
-                  <p className="shrink-0 font-sans text-xs font-bold text-muted-foreground sm:max-w-[11rem] sm:text-end">
-                    {new Intl.DateTimeFormat('de-DE', {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                    }).format(new Date())}
-                  </p>
-                </div>
-
-                {active === 'schreiben' && (
-                  <p className="max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground md:text-base">
-                    Erzeuge Sätze nach Thema und Niveau (A1–B2). Öffne die
-                    Grammatik-Referenz nur wenn du sie brauchst.
-                  </p>
-                )}
-                {active === 'profil' && (
-                  <p className="max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground md:text-base">
-                    Sieh Serien, Genauigkeit und Übungsvolumen — alles aus deinen
-                    Aktivitäten unter Schreiben.
-                  </p>
-                )}
+            <h1 id="dashboard-section-title" className="sr-only">
+              {current.label}
+            </h1>
+            <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-4xl md:px-8 md:py-10 lg:max-w-5xl">
+            {active === 'lesen' && (
+              <div className="animate-in fade-in duration-200">
+                <ReadingPracticeView />
               </div>
-            </header>
-
+            )}
             {active === 'schreiben' && (
               <div className="animate-in fade-in duration-200">
                 <GrammarPracticeView />
               </div>
             )}
             {active === 'profil' && (
-              <div className="animate-in fade-in duration-200">
-                <ProfileView />
-              </div>
-            )}
-          </div>
-        </main>
+                <div className="animate-in fade-in duration-200">
+                  <ProfileView />
+                </div>
+              )}
+            </div>
+          </main>
         </div>
 
         <nav

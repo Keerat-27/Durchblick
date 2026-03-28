@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { createAuthRouter } from './auth-routes.js';
+import { createLesenRouter } from './lesen-routes.js';
 
 const PORT = Number(process.env.PORT) || 3001;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
@@ -40,6 +41,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', createAuthRouter(tokenConfig, CLIENT_ORIGIN));
+app.use('/api/lesen', createLesenRouter(JWT_ACCESS_SECRET));
 
 app.listen(PORT, () => {
   console.log(`API listening on http://localhost:${PORT}`);
